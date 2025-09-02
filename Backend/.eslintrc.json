@@ -1,0 +1,71 @@
+{
+  "env": {
+    "node": true,
+    "es2021": true,
+    "jest": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:node/recommended",
+    "plugin:security/recommended"
+  ],
+  "plugins": ["node", "security"],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "rules": {
+    // Basic JavaScript rules
+    "no-unused-vars": "error",
+    "no-console": "warn",
+    "no-debugger": "error",
+    "prefer-const": "error",
+    "no-var": "error",
+    "indent": ["error", 2],
+    "quotes": ["error", "single"],
+    "semi": ["error", "always"],
+
+    // Node.js specific rules
+    "node/no-unpublished-require": "off",
+    "node/no-unsupported-features/es-syntax": "off",
+    "node/no-missing-require": "error",
+    "node/no-missing-import": "error",
+
+    // Security rules for Express
+    "security/detect-non-literal-require": "warn",
+    "security/detect-non-literal-fs-filename": "warn",
+    "security/detect-object-injection": "warn",
+    "security/detect-possible-timing-attacks": "warn",
+
+    // Express best practices
+    "no-sync": "warn",
+    "handle-callback-err": ["error", "^(err|error)$"],
+
+    // Code quality
+    "complexity": ["warn", 10],
+    "max-depth": ["warn", 4],
+    "max-params": ["warn", 5]
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.js", "**/*.spec.js"],
+      "env": {
+        "jest": true
+      },
+      "rules": {
+        "no-console": "off"
+      }
+    },
+    {
+      "files": ["config/**/*.js", "env/**/*.js"],
+      "rules": {
+        "security/detect-non-literal-require": "off"
+      }
+    }
+  ],
+  "settings": {
+    "node": {
+      "tryExtensions": [".js", ".json", ".node"]
+    }
+  }
+}
