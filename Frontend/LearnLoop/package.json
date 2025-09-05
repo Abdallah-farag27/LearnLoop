@@ -22,13 +22,18 @@
   },
   "private": true,
   "dependencies": {
+    "@angular/cdk": "^20.2.2",
     "@angular/common": "^20.2.0",
     "@angular/compiler": "^20.2.0",
     "@angular/core": "^20.2.0",
     "@angular/forms": "^20.2.0",
     "@angular/platform-browser": "^20.2.0",
     "@angular/router": "^20.2.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-angular": "^0.542.0",
     "rxjs": "~7.8.0",
+    "tailwind-merge": "^3.3.1",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
   },
@@ -36,6 +41,7 @@
     "@angular/build": "^20.2.1",
     "@angular/cli": "^20.2.1",
     "@angular/compiler-cli": "^20.2.0",
+    "@tailwindcss/postcss": "^4.1.13",
     "@types/jasmine": "~5.1.0",
     "jasmine-core": "~5.9.0",
     "karma": "~6.4.0",
@@ -43,6 +49,9 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.13",
+    "tailwindcss-animate": "^1.0.7",
     "typescript": "~5.9.2"
   }
 }
