@@ -1,13 +1,14 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
-import { Login } from './components/login/login';
-
+import { NavbarComponent } from './components/navbar/navbar.component';
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Login],
+  standalone: true,
+  imports: [CommonModule, RouterOutlet, NavbarComponent],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrls: ['./app.css']
 })
 export class App {
-  protected readonly title = signal('LearnLoop');
+  title = 'learn-loop';
 }

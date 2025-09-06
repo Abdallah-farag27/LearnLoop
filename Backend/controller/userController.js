@@ -39,7 +39,7 @@ exports.login = async (req, res) => {
       });
     }
 
-    const token = jwt.sign(
+    const accessToken = jwt.sign(
       { id: user._id, email: user.email, role: user.role },
       process.env.JWT_SECRET,
       {
@@ -60,7 +60,7 @@ exports.login = async (req, res) => {
     res.status(200).json({
       status: "success",
       message: "Login successful",
-      token,
+      accessToken,
       refreshToken,
     });
   } catch (error) {

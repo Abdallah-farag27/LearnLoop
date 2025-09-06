@@ -4,46 +4,56 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { z } from 'zod';
 import { AuthService } from '@shared/services/auth.service';
 import { RouterModule, Router } from '@angular/router';
-
 // Zod schema for validation
-const loginSchema = z.object({
+const registrationSchema = z.object({
+  username: z.string()
+    .min(3, 'Username must be at least 3 characters')
+    .trim(),
   email: z.string()
     .email('Please enter a valid email')
     .toLowerCase()
     .trim(),
   password: z.string()
     .min(5, 'Password must be at least 5 characters'),
-})
+  confirmPassword: z.string(),
+  role: z.enum(['admin', 'user']).default('user')
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
 
-type loginForm = z.infer<typeof loginSchema>;
+type RegistrationForm = z.infer<typeof registrationSchema>;
 
 @Component({
   selector: 'app-registration',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
-  templateUrl: './login.html',
-  styleUrls: ['./login.css']
+  templateUrl: './registration.component.html',
+  styleUrls: ['./registration.component.css']
 })
-export class Login {
-  loginForm: FormGroup;
+export class RegistrationComponent {
+  registrationForm: FormGroup;
   isSubmitting = false;
   submitError = '';
   submitSuccess = false;
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
-    this.loginForm = this.fb.group({
+  constructor(private fb: FormBuilder, private authService: AuthService) {
+    this.registrationForm = this.fb.group({
+      username: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(5)]],
+      confirmPassword: ['', [Validators.required]],
+      role: ['user']
     });
   }
 
   isFieldInvalid(fieldName: string): boolean {
-    const field = this.loginForm.get(fieldName);
+    const field = this.registrationForm.get(fieldName);
     return field ? field.invalid && (field.dirty || field.touched) : false;
   }
 
   getFieldError(fieldName: string): string {
-    const field = this.loginForm.get(fieldName);
+    const field = this.registrationForm.get(fieldName);
     if (!field || !field.errors) return '';
 
     if (field.errors['required']) return `${fieldName} is required`;
@@ -54,9 +64,7 @@ export class Login {
   }
 
   onSubmit(): void {
-    console.log(123123);
-    if (this.loginForm.invalid) {
-      console.log(456456);
+    if (this.registrationForm.invalid) {
       this.markAllFieldsAsTouched();
       return;
     }
@@ -67,25 +75,17 @@ export class Login {
 
     try {
       // Validate with Zod
-      const formData = loginSchema.parse(this.loginForm.value);
+      const formData = registrationSchema.parse(this.registrationForm.value);
 
       // Remove confirmPassword before processing
-      const { ...loginData } = formData;
-      console.log('Login Data:', loginData);
+      const { confirmPassword, ...registrationData } = formData;
+      console.log('Registration Data:', registrationData);
 
-
-      this.authService.login(loginData).subscribe({
-        next: (response) => {
-
-          localStorage.setItem('accessToken', response.accessToken);
-          localStorage.setItem('refreshToken', response.refreshToken);
-
-
+      this.authService.signup(registrationData).subscribe({
+        next: () => {
           this.isSubmitting = false;
           this.submitSuccess = true;
-          this.loginForm.reset();
-
-          this.router.navigate(['/home']);
+          this.registrationForm.reset();
         },
         error: (err) => {
           this.isSubmitting = false;
@@ -93,21 +93,20 @@ export class Login {
         },
       });
 
-
-
     } catch (error: any) {
       if (error.errors) {
+        // Zod validation errors
         this.submitError = error.errors[0]?.message || 'Validation failed';
       } else {
-        this.submitError = 'Log in failed. Please try again.';
+        this.submitError = 'Registration failed. Please try again.';
       }
       this.isSubmitting = false;
     }
   }
 
   private markAllFieldsAsTouched() {
-    Object.keys(this.loginForm.controls).forEach(key => {
-      this.loginForm.get(key)?.markAsTouched();
+    Object.keys(this.registrationForm.controls).forEach(key => {
+      this.registrationForm.get(key)?.markAsTouched();
     });
   }
 
@@ -127,8 +126,8 @@ export class Login {
 
   // Method to get form data (useful for testing)
   getFormData() {
-    if (this.loginForm.valid) {
-      const formData = this.loginForm.value;
+    if (this.registrationForm.valid) {
+      const formData = this.registrationForm.value;
       const { confirmPassword, ...userData } = formData;
       return userData;
     }
@@ -137,7 +136,7 @@ export class Login {
 
   // Method to reset form
   resetForm() {
-    this.loginForm.reset();
+    this.registrationForm.reset();
     this.submitError = '';
     this.submitSuccess = false;
     this.isSubmitting = false;
