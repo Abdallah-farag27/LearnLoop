@@ -1,0 +1,210 @@
+<div
+    class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div
+        class="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div
+            class="bg-gradient-to-r from-[#2599a8] to-indigo-600 p-8 text-center">
+            <div
+                class="w-20 h-20 mx-auto mb-4 bg-white rounded-full flex items-center justify-center">
+                <img src="assets/logo.png"
+                    alt="LearnLoop Logo"
+                    class="w-12 h-12 object-contain"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                <div
+                    class="hidden w-12 h-12 bg-[#2599a8] rounded-full items-center justify-center text-white font-bold text-xl">
+                    LL
+                </div>
+            </div>
+            <h1
+                class="text-3xl font-bold text-white mb-2">
+                LearnLoop</h1>
+            <p
+                class="text-blue-100">
+                Create your
+                account</p>
+        </div>
+
+        <div class="p-8">
+            <form
+                [formGroup]="registrationForm"
+                (ngSubmit)="onSubmit()"
+                class="space-y-6">
+                <div>
+                    <label
+                        for="username"
+                        class="block text-sm font-medium text-gray-700 mb-2">
+                        Username
+                    </label>
+                    <input
+                        id="username"
+                        type="text"
+                        formControlName="username"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                        placeholder="Enter your username"
+                        [class.border-red-500]="isFieldInvalid('username')">
+                    <div *ngIf="isFieldInvalid('username')"
+                        class="mt-1 text-sm text-red-600">
+                        {{
+                        getFieldError('username')
+                        }}
+                    </div>
+                </div>
+
+                <div>
+                    <label
+                        for="email"
+                        class="block text-sm font-medium text-gray-700 mb-2">
+                        Email
+                        Address
+                    </label>
+                    <input
+                        id="email"
+                        type="email"
+                        formControlName="email"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                        placeholder="Enter your email"
+                        [class.border-red-500]="isFieldInvalid('email')">
+                    <div *ngIf="isFieldInvalid('email')"
+                        class="mt-1 text-sm text-red-600">
+                        {{
+                        getFieldError('email')
+                        }}
+                    </div>
+                </div>
+
+                <div>
+                    <label
+                        for="password"
+                        class="block text-sm font-medium text-gray-700 mb-2">
+                        Password
+                    </label>
+                    <input
+                        id="password"
+                        type="password"
+                        formControlName="password"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                        placeholder="Enter your password"
+                        [class.border-red-500]="isFieldInvalid('password')">
+                    <div *ngIf="isFieldInvalid('password')"
+                        class="mt-1 text-sm text-red-600">
+                        {{
+                        getFieldError('password')
+                        }}
+                    </div>
+                </div>
+
+                <div>
+                    <label
+                        for="confirmPassword"
+                        class="block text-sm font-medium text-gray-700 mb-2">
+                        Confirm
+                        Password
+                    </label>
+                    <input
+                        id="confirmPassword"
+                        type="password"
+                        formControlName="confirmPassword"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                        placeholder="Confirm your password"
+                        [class.border-red-500]="isFieldInvalid('confirmPassword')">
+                    <div *ngIf="isFieldInvalid('confirmPassword')"
+                        class="mt-1 text-sm text-red-600">
+                        {{
+                        getFieldError('confirmPassword')
+                        }}
+                    </div>
+                </div>
+
+                <div>
+                    <label
+                        for="role"
+                        class="block text-sm font-medium text-gray-700 mb-2">
+                        Account
+                        Type
+                    </label>
+                    <select
+                        id="role"
+                        formControlName="role"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors">
+                        <option
+                            value="user">
+                            User
+                        </option>
+                        <option
+                            value="admin">
+                            Admin
+                        </option>
+                    </select>
+                </div>
+
+                <button
+                    type="submit"
+                    [disabled]="isSubmitting"
+                    class="w-full bg-gradient-to-r from-[#2599a8] to-indigo-600 hover:from-[#2599a8] hover:to-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                    <span
+                        *ngIf="!isSubmitting">Create
+                        Account</span>
+                    <span
+                        *ngIf="isSubmitting"
+                        class="flex items-center justify-center">
+                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24">
+                            <circle
+                                class="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                stroke-width="4">
+                            </circle>
+                            <path
+                                class="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                        </svg>
+                        Creating
+                        Account...
+                    </span>
+                </button>
+
+                <div *ngIf="submitError"
+                    class="p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <p
+                        class="text-sm text-red-600">
+                        {{
+                        submitError
+                        }}</p>
+                </div>
+
+                <div *ngIf="submitSuccess"
+                    class="p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <p
+                        class="text-sm text-green-600">
+                        Account
+                        created
+                        successfully!
+                    </p>
+                </div>
+            </form>
+
+            <div
+                class="mt-6 text-center">
+                <p
+                    class="text-sm text-gray-600">
+                    Already
+                    have an
+                    account?
+                    <a routerLink="/login"
+                        class="font-medium text-[#2599a8] hover:text-blue-500 transition-colors">
+                        Sign
+                        in
+                        here
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
