@@ -1,20 +1,45 @@
-const app = require("./app.js");
-const mongoose = require("mongoose");
-const dotenv = require("dotenv");
+const express = require('express')
+const app = express();
+const cors = require('cors');
+require('dotenv').config({path:'./config.env'})
+const mongoose = require('mongoose');
 
-dotenv.config({ path: "./config.env" });
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-mongoose
-  .connect("mongodb://127.0.0.1:27017/LearnLoop")
-  .then(() => {
-    console.log("Connected To DB Successfully");
-  })
-  .catch((error) => {
-    console.log(error);
+
+app.use(cors())
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
+
+// routes 
+const UserRoutes = require('./routes/userRoutes');
+const ProjectRoutes = require('./routes/projectRoutes');
+const TaskRoutes = require('./routes/taskRoutes');
+const CommentRoutes = require('./routes/commentRoutes');
+const ReviewRoutes = require('./routes/reviewRoutes');
+
+app.use('/users',UserRoutes);
+app.use('/projects',ProjectRoutes);
+app.use('/projects/:projectId/tasks',TaskRoutes);
+app.use('/projects/:projectId/tasks/:taskId/comments',CommentRoutes);
+app.use('/reviews',ReviewRoutes);
+
+
+// Connect DB
+mongoose.connect(process.env.ConnectionString).
+then(()=> console.log("Connected To DB")).
+catch((Error)=>{console.log(Error)})
+
+app.use((req, res, next) => {
+  res.status(404).json({
+    status: false,
+    message: 'undefined endpoint',
+    path: req.originalUrl
   });
-
-const port = process.env.PORT || 3000;
-
-const server = app.listen(port, () => {
-  console.log(`server is running on port ${port}}`);
 });
+
+app.listen(process.env.Port,()=>{
+  console.log("Server Listen ");
+})

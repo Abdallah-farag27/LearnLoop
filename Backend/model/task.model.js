@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+
+
 const taskSchema = mongoose.Schema(
   {
     title: {
@@ -12,26 +14,33 @@ const taskSchema = mongoose.Schema(
       default: "todo",
       required: true,
     },
-    assignee: {
+    description: {
+      type:String
+    },
+    users:[{
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: [true, "Task must have an assignee"],
-    },
+      required: [true, "Task must have an user"] }],
     projectId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Project",
+      ref: "Projects",
       required: [true, "Task must belong to a project"],
     },
     dueDate: {
       type: Date,
       required: [true, "Task must have a due date"],
     },
+    createdby: {
+      type : mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required : [true,"Task must have an admin"]
+    }
   },
   {
     timestamps: true,
   }
 );
 
-const Task = mongoose.model("Task", taskSchema);
+const Tasks = mongoose.model("Tasks",taskSchema);
+module.exports = Tasks;
 
-module.exports = Task;

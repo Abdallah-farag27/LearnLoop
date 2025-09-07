@@ -2,29 +2,35 @@ const mongoose = require("mongoose");
 
 const projectSchema = mongoose.Schema(
   {
-    name: {
+    title: {
       type: String,
-      required: [true, "Project must have name"],
+      required: [true, "Project must have title"],
     },
     description: {
       type: String,
       required: [true, "Project must have description"],
     },
-    owner: {
+    admin: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: [true, "Project must have owner"],
+      required: [true, "Project must have Admin"],
     },
-    members: [
+    users: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
+        required: [true, "Project must have atleast one user"],
       },
     ],
+    dueDate : {
+      type:Date,
+      required :[true,"Project must have DueDate"]
+    }
   },
   { timestamps: true }
 );
 
-const Project = mongoose.model("Project", projectSchema);
+const Projects = mongoose.model("Projects",projectSchema);
+module.exports = Projects;
 
-module.exports = Project;
+

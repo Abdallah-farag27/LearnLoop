@@ -1,14 +1,16 @@
-const express = require("express");
 const commentController = require("../controller/commentController");
-const authentication = require("../middleware/auth");
-const router = express.Router();
+const Auth = require("../middleware/auth");
+const router = require("express").Router({ mergeParams: true });
 
-// // All routes require authentication
-// router.use(authentication.auth);
+router.use(Auth.auth);
 
-// // Comment routes
-router.get("/tasks/:taskId", commentController.getTaskComments);
-router.post("/tasks/:taskId", commentController.createComment);
-router.delete("/:id", commentController.deleteComment);
+router.route('/')
+.get (commentController.getTaskComments)
+.post(commentController.createComment);
+
+router.route('/:commentId')
+.get(commentController.getCommentbyId)
+.patch(commentController.updateComment)
+.delete(Auth.HasPersmissions,commentController.deleteComment);
 
 module.exports = router;
