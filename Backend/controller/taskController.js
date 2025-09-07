@@ -10,8 +10,8 @@ exports.getProjectTasks = async (req, res) => {
       });
     }
     const tasks = await Task.find({ projectId })
-      .populate("assignee", "username")
-      .populate("projectId", "name");
+      .populate("users", "username")
+      .populate("projectId", "title");
     res.status(200).json({
       status: "success",
       length: tasks.length,
@@ -26,6 +26,7 @@ exports.getProjectTasks = async (req, res) => {
     });
   }
 };
+
 exports.createTask = async (req, res) => {
   try {
     const projectId = req.params.projectId;
@@ -36,19 +37,13 @@ exports.createTask = async (req, res) => {
       });
     }
 
-    const { title, status, assignee, dueDate } = req.body;
+    const { title, descritpion,users, dueDate ,createdby} = req.body;
 
-    const newTask = await Task.create({
-      title,
-      status,
-      assignee,
-      projectId,
-      dueDate,
-    });
+    const newTask = await Task.create({title,descritpion,users,projectId,dueDate,createdby});
 
     const task = await Task.findById(newTask._id)
-      .populate("assignee", "username")
-      .populate("projectId", "name");
+      .populate("users", "username")
+      .populate("projectId", "title");
 
     res.status(201).json({
       status: "success",
@@ -66,7 +61,7 @@ exports.createTask = async (req, res) => {
 
 exports.getTaskById = async (req, res) => {
   try {
-    const taskId = req.params.id;
+    const taskId = req.params.taskId;
     if (!taskId) {
       return res.status(400).json({
         status: "fail",
@@ -75,8 +70,8 @@ exports.getTaskById = async (req, res) => {
     }
 
     const task = await Task.findById(taskId)
-      .populate("assignee", "username")
-      .populate("projectId", "name");
+      .populate("users", "username")
+      .populate("projectId", "title");
 
     if (!task) {
       return res.status(404).json({
@@ -101,7 +96,7 @@ exports.getTaskById = async (req, res) => {
 
 exports.updateTask = async (req, res) => {
   try {
-    const taskId = req.params.id;
+    const taskId = req.params.taskId;
     if (!taskId) {
       return res.status(400).json({
         status: "fail",
@@ -113,8 +108,8 @@ exports.updateTask = async (req, res) => {
       new: true,
       runValidators: true,
     })
-      .populate("assignee", "username")
-      .populate("projectId", "name");
+      .populate("users", "username")
+      .populate("projectId", "title");
 
     if (!updatedTask) {
       return res.status(404).json({
@@ -139,7 +134,7 @@ exports.updateTask = async (req, res) => {
 
 exports.deleteTask = async (req, res) => {
   try {
-    const id = req.params.id;
+    const id = req.params.taskId;
 
     if (!id) {
       return res.status(400).json({

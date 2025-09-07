@@ -1,16 +1,17 @@
 const Project = require("../model/project.model");
+
 exports.getAllProjects = async (req, res) => {
   try {
-    const projects = await Project.find()
-      .populate("owner", "username")
-      .populate("members", "username");
+    const adminId = req.query.adminId;
+    if (!adminId) {
+      return res.status(400).json({
+        status: "fail",
+        message: "There is no AdminID",
+      });
+    }
+    const projects = await Project.find({admin:adminId}).populate("admin")
     res.status(200).json({
-      status: "success",
-      length: projects.length,
-      data: {
-        projects,
-      },
-    });
+      status: "success",length: projects.length,data: {projects}});
   } catch (err) {
     res.status(500).json({
       status: "error",
@@ -20,20 +21,24 @@ exports.getAllProjects = async (req, res) => {
 };
 
 exports.createProject = async (req, res) => {
+  
+  if (!req.body) {
+    return res.status(400).json({
+      status: "fail",
+      message: "There is no content",
+    });
+  }
+
   try {
     const newProject = {
-      name: req.body.name,
+      title: req.body.title,
       description: req.body.description,
-      owner: req.body.owner,
-      members: req.body.members,
+      admin: req.body.admin,
+      users: req.body.users,
+      dueDate: req.body.dueDate
     };
     const project = await Project.create(newProject);
-    res.status(201).json({
-      status: "success",
-      data: {
-        project,
-      },
-    });
+    res.status(201).json({status: "success",data: {project}});
   } catch (err) {
     res.status(500).json({
       status: "error",
@@ -42,8 +47,8 @@ exports.createProject = async (req, res) => {
   }
 };
 exports.getProjectById = async (req, res) => {
-  try {
-    const id = req.params.id;
+    try {
+    const id = req.params.projectId;
     if (!id) {
       return res.status(400).json({
         status: "fail",
@@ -51,8 +56,8 @@ exports.getProjectById = async (req, res) => {
       });
     }
     const project = await Project.findById(id)
-      .populate("owner", "username")
-      .populate("members", "username");
+      .populate("admin", "username")
+      .populate("users", "username");
     if (!project) {
       return res.status(404).json({
         status: "fail",
@@ -75,7 +80,7 @@ exports.getProjectById = async (req, res) => {
 
 exports.updateProject = async (req, res) => {
   try {
-    const id = req.params.id;
+    const id = req.params.projectId;
     if (!id) {
       return res.status(400).json({
         status: "fail",
@@ -86,8 +91,8 @@ exports.updateProject = async (req, res) => {
       new: true,
       runValidators: true,
     })
-      .populate("owner", "username")
-      .populate("members", "username");
+      .populate("admin", "username")
+      .populate("users", "username");
     if (!updatedProject) {
       return res.status(404).json({
         status: "fail",
@@ -110,7 +115,7 @@ exports.updateProject = async (req, res) => {
 
 exports.deleteProject = async (req, res) => {
   try {
-    const id = req.params.id;
+    const id = req.params.projectId;
     if (!id) {
       return res.status(400).json({
         status: "fail",
@@ -136,12 +141,13 @@ exports.deleteProject = async (req, res) => {
   }
 };
 
+
 exports.addMember = async (req, res) => {
   try {
-    const projectId = req.params.id;
-    const memberId = req.body.memberId;
+    const projectId = req.params.projectId;
+    const userId = req.body.userId;
 
-    if (!projectId || !memberId) {
+    if (!projectId || !userId) {
       return res.status(400).json({
         status: "fail",
         message: "Project ID and member ID are required",
@@ -158,19 +164,19 @@ exports.addMember = async (req, res) => {
 
     // Prevent duplicate members
     // 409 conflict
-    if (project.members.includes(memberId)) {
+    if (project.users.includes(userId)) {
       return res.status(409).json({
         status: "fail",
         message: "Member already exists in project",
       });
     }
 
-    project.members.push(memberId);
+    project.users.push(userId);
     await project.save();
 
     const updatedProject = await Project.findById(projectId)
-      .populate("owner", "username")
-      .populate("members", "username");
+      .populate("admin", "username")
+      .populate("users", "username");
 
     res.status(200).json({
       status: "success",
@@ -188,10 +194,10 @@ exports.addMember = async (req, res) => {
 
 exports.removeMember = async (req, res) => {
   try {
-    const projectId = req.params.id;
-    const memberId = req.params.memberId;
+    const projectId = req.params.projectId;
+    const userId = req.body.userId;
 
-    if (!projectId || !memberId) {
+    if (!projectId || !userId) {
       return res.status(400).json({
         status: "fail",
         message: "Project ID and member ID are required",
@@ -206,20 +212,20 @@ exports.removeMember = async (req, res) => {
       });
     }
 
-    const memberIndex = project.members.indexOf(memberId);
-    if (memberIndex === -1) {
+    const userIndex = project.users.indexOf(userId);
+    if (userIndex === -1) {
       return res.status(404).json({
         status: "fail",
         message: "Member not found in project",
       });
     }
 
-    project.members.splice(memberIndex, 1);
+    project.users.splice(userIndex, 1);
     await project.save();
 
     const updatedProject = await Project.findById(projectId)
-      .populate("owner", "username")
-      .populate("members", "username");
+      .populate("admin", "username")
+      .populate("users", "username");
 
     res.status(200).json({
       status: "success",

@@ -12,15 +12,16 @@ const commentSchema = mongoose.Schema(
       ref: "User",
       required: [true, "Comment must have an author"],
     },
-    content: {
+    description: {
       type: String,
       required: [true, "Comment must have content"],
     },
   },
   {
-    timestamps: { createdAt: true, updatedAt: false },
+    timestamps: true
   }
 );
 
-const Comment = mongoose.model("Comment", commentSchema);
-module.exports = Comment;
+const Comments = mongoose.model("Comments",commentSchema);
+module.exports = Comments;
+

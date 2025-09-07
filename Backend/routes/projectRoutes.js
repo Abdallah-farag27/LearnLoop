@@ -1,20 +1,21 @@
-const express = require("express");
 const projectController = require("../controller/projectController");
-const authentication = require("../middleware/auth");
-const app = require("../app");
-const router = express.Router();
+const Auth = require("../middleware/auth");
+const router = require("express").Router();
 
-// router.use(authentication.auth);
-router.use(authentication.auth);
-router.get("/:id", projectController.getProjectById);
+router.use(Auth.auth);
 
-router.use(authentication.restrictTo("admin"));
+router.route("/")
+.get(projectController.getAllProjects)
+.post(Auth.HasPersmissions,projectController.createProject);
 
-router.post("/", projectController.createProject);
-router.patch("/:id", projectController.updateProject);
-router.delete("/:id", projectController.deleteProject);
-router.get("/", projectController.getAllProjects);
-router.post("/:id/addmembers", projectController.addMember);
-router.delete("/:id/members/:memberId", projectController.removeMember);
+router.route('/:projectId')
+.get(projectController.getProjectById)
+.delete(Auth.HasPersmissions,projectController.deleteProject)
+.patch(Auth.HasPersmissions,projectController.updateProject);
+
+router.route('/:projectId/users')
+.post(Auth.HasPersmissions,projectController.addMember)
+.delete(Auth.HasPersmissions,projectController.removeMember)
+
 
 module.exports = router;
