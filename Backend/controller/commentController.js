@@ -4,7 +4,6 @@ exports.createComment = async (req, res) => {
   try {
     const taskId = req.params.taskId;
     const {author,description} = req.body;
-
     const comment = {
       taskId,author,description
     };    

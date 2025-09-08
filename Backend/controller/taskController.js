@@ -1,4 +1,34 @@
 const Task = require("../model/task.model");
+const DeleteFile = require("../utilis/DelPrevFile");
+
+
+exports.uploadtaskfile = async (req, res) => {
+  try {
+    const taskId = req.params.taskId;
+    const fpath = `/uploads/files/${req.file.filename}`;
+
+    let task = await Task.findById(taskId);
+    
+    if (!task) {
+      return res.status(401).json({
+        status: "fail",
+        message: "task is not found",
+      });
+    }
+
+    if (task.img) DeleteFile(task.img);
+
+    task.img = imagePath;
+    await task.save();
+
+    res.status(200).json({
+      message: "file uploaded successfully",
+      fpath,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
 exports.getProjectTasks = async (req, res) => {
   try {

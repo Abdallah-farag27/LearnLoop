@@ -1,0 +1,275 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Project Management API",
+    "version": "1.0.0",
+    "description": "A web-based management system that provides a simple and efficient way to manage users. The platform allows creating, updating, and tracking user accounts with ease. Designed to be user-friendly, reliable, and scalable, it helps streamline workflows and improve productivity."
+  },
+  "servers": [
+    { "url": "http://localhost:3000" }
+  ],
+  "tags": [
+    { "name": "Users", "description": "API for managing users" },
+    { "name": "Auth", "description": "User authentication (signup/login)" },
+    { "name": "Projects", "description":"Manage projects [add,delete,update,addusers,removeusers]"},
+    { "name": "Tasks", "description":"Manage Task [add,delete,update,addusers,removeusers]"},
+    { "name": "Reviews", "description":"Reviws [add,delete,update,addusers,removeusers]"}
+  ],
+  "paths": {
+    "/users": {
+      "get": {
+        "summary": "Get all users",
+        "tags": ["Users"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "List of users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/User" }
+                }
+              }
+            }
+          },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "summary": "Get a user by ID",
+        "tags": ["Users"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "User found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          },
+          "404": { "description": "User not found" },
+          "500": { "description": "Server error" }
+        }
+      },
+      "patch": {
+        "summary": "Update a user by ID",
+        "tags": ["Users"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/User" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "User updated successfully" },
+          "400": { "description": "Invalid input" },
+          "404": { "description": "User not found" },
+          "500": { "description": "Server error" }
+        }
+      },
+      "delete": {
+        "summary": "Delete a user by ID",
+        "tags": ["Users"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "User deleted successfully" },
+          "404": { "description": "User not found" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/users/signup": {
+      "post": {
+        "summary": "Register a new user",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/User" } }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User signed up successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthResponse" }
+              }
+            }
+          },
+          "400": { "description": "Invalid input" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "summary": "Login a user",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/Login" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful - returns JWT token",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthResponse" }
+              }
+            }
+          },
+          "400": { "description": "Invalid credentials" },
+          "500": { "description": "Server error" }
+        }
+      }
+    }
+    ,"/projects": {
+        "get": {
+          "tags": ["Projects"],
+          "summary": "Get all projects for a specific admin",
+          "security": [{ "bearerAuth": [] }],
+          "parameters": [
+            {
+              "name": "adminId",
+              "in": "query",
+              "required": true,
+              "schema": { "type": "string" }
+            }
+          ],
+          "responses": {
+            "200": { "description": "List of projects for the given admin" },
+            "400": { "description": "Missing adminId" },
+            "500": { "description": "Server error" }
+          }
+        },
+        "post": {
+          "summary": "Create a new Project",
+          "tags": ["Projects"],
+          "security": [{ "bearerAuth": [] }],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Project" } }
+            }
+          },
+          "responses": {
+            "201": { "description": "Project created successfully" },
+            "400": { "description": "Invalid input" },
+            "500": { "description": "Server error" }
+          }
+        }
+      },
+    "/projects/{projectId}": {
+    "get": {
+      "summary": "Get a project by ID",
+      "tags": ["Projects"],
+      "security": [{ "bearerAuth": [] }],
+      "parameters": [
+        {
+          "name": "projectId",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "example": "64f7a1e5b2c4a1234567890a" }
+        }
+      ],
+      "responses": {
+        "200": { "description": "Project found" },
+        "404": { "description": "Project not found" },
+        "500": { "description": "Server error" }
+    }
+  },
+  "patch": {
+    "summary": "Update a project by ID",
+    "tags": ["Projects"],
+    "security": [{ "bearerAuth": [] }],
+    "parameters": [
+      {
+        "name": "projectId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string" }
+      }
+    ],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": { "schema": { "$ref": "#/components/schemas/Project" } }
+      }
+    },
+    "responses": {
+      "200": { "description": "Project updated successfully" },
+      "403": { "description": "Forbidden - Requires admin role" },
+      "404": { "description": "Project not found" },
+      "500": { "description": "Server error" }
+    }
+  },
+  "delete": {
+    "summary": "Delete a project by ID",
+    "tags": ["Projects"],
+    "security": [{ "bearerAuth": [] }],
+    "parameters": [
+      {
+        "name": "projectId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string" }
+      }
+    ],
+    "responses": {
+      "200": { "description": "Project deleted successfully" },
+      "403": { "description": "Forbidden - Requires admin role" },
+      "404": { "description": "Project not found" },
+      "500": { "description": "Server error" }
+    }
+  }},
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": { "type": "string", "example": "Ahmed@example.com" },
+          "password": { "type": "string", "example": "12345" },
+          "username": { "type": "string", "example": "Ahmed" }
+        }
+      },
+      "Login": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": { "type": "string", "example": "Ahmed@example.com" },
+          "password": { "type": "string", "example": "#####" }
+        }
+      },
+      "AuthResponse": {
+        "type": "object",
+        "properties": {
+          "token": { "type": "string", "example": "eyJhbGciOiJIUzI1NiIsInR5cCI..." }}
+      }
+    }
+  }
+
+  }
+}

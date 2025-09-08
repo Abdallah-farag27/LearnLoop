@@ -1,4 +1,34 @@
 const Project = require("../model/project.model");
+const DeleteFile = require("../utilis/DelPrevFile");
+
+exports.uploadProjectImg = async (req,res) =>{
+  try {
+    const projectId = req.params.projectId;
+    const imagePath = `/uploads/images/projects/${req.file.filename}`;
+
+    let project = await Project.findById(projectId);
+
+    if (!project) {
+      return res.status(401).json({
+        status: "fail",
+        message: "Project is not found",
+      });
+    }
+
+    if (project.img) DeleteFile(project.img);
+
+    project.img = imagePath;
+    await project.save();
+
+    res.status(200).json({
+      message: "Image uploaded successfully",
+      imagePath,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
 
 exports.getAllProjects = async (req, res) => {
   try {

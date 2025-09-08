@@ -8,7 +8,7 @@ exports.auth = async (req, res, next) => {
       return res.status(401).json({ message: "You must login first" });
     }
     const decoded = await promisify(jwt.verify)(authorization, process.env.JWT_SECRET);
-    req.role = decoded.role;
+    req.admin = decoded.admin;
     return next();  
   } catch (error) {
     console.log(error);
@@ -17,7 +17,7 @@ exports.auth = async (req, res, next) => {
 };
 
 exports.HasPersmissions = (req,res,next) => {
-  if (req.role) {
+  if (req.admin) {
     return next();
   }
   return res.status(403).json({ message: "You Do not have Permission!" });
