@@ -34,6 +34,10 @@ const taskSchema = mongoose.Schema(
       type : mongoose.Schema.Types.ObjectId,
       ref: "User",
       required : [true,"Task must have an admin"]
+    },
+    filepath:{
+      type:String,
+      default:""
     }
   },
   {

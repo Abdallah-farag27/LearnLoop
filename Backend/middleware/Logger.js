@@ -1,5 +1,1 @@
-exports.Logger = async(req,res,next) => {
-  
-
-
-};
+exports.Logger = async(req,res,next) => {};

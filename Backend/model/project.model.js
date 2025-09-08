@@ -25,6 +25,10 @@ const projectSchema = mongoose.Schema(
     dueDate : {
       type:Date,
       required :[true,"Project must have DueDate"]
+    },
+    img: {
+      type:String,
+      default:""
     }
   },
   { timestamps: true }

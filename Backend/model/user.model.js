@@ -22,13 +22,16 @@ const userSchema = mongoose.Schema(
       required: [true, "User must have Password"],
       minlength: 5,
     },
-    role: {
+    admin: {
       type: Boolean,
       default: false,
     },
     img:{
       type:String,
       default :""
+    },
+    refreshToken:{
+      type:String
     }
   },
   {
