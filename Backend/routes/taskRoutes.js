@@ -21,4 +21,6 @@ router.post(
   taskController.uploadtaskfile
 );
 
+router.get("/:taskId/file",taskController.gettaskfile);
+
 module.exports = router;

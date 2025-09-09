@@ -23,6 +23,7 @@ router.route('/:projectId/users')
 
 router.route('/:projectId/uploadimg')
 .post(Auth.HasPersmissions,uploadImage.single("pro_img"),projectController.uploadProjectImg);
+router.get("/:projectId/showimg", projectController.getImg);
 
 
 module.exports = router;
