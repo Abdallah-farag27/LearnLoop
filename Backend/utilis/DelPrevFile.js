@@ -19,7 +19,7 @@ const DeleteFile = (fpath)=>{
   return isDeleted;
 } 
 
-module.exports = DeleteFile;  
+module.exports = {DeleteFile,path};  
 
 
 

@@ -2,13 +2,34 @@ const User = require("../model/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const {promisify} = require('util');
-const DeleteFile  = require("../utilis/DelPrevFile");
+const {DeleteFile,path}  = require("../utilis/DelPrevFile");
+
+exports.getImg = async (req, res) => {
+  try {
+    const UserId = req.params.id;
+
+    let user = await User.findById(UserId, "img");
+    if (!user || !user.img) {
+      return res.status(401).json({
+        status: "fail",
+        message: "user is not found",
+      });
+    }
+
+    const imgpath = path.join(__dirname, "..", user.img);
+    return res.status(200).sendFile(imgpath);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+
 
 exports.uploadPersonalImg = async (req,res) =>{
     try {
     const userId = req.params.id;
-    const imagePath = `/uploads/images/persons/${req.file.filename}`;
-
+    const imagePath = path.join(__dirname,'..','Uploads','images','persons',req.file.filename);
     let user = await User.findById(userId);
 
     if (!user) {
@@ -32,8 +53,6 @@ exports.uploadPersonalImg = async (req,res) =>{
     res.status(500).json({ error: err.message });
   }
 };
-
-
 
 exports.signup = async (req, res) => {
   try {

@@ -16,4 +16,7 @@ router.post('/login', userController.login);
 router.post('/refreshtoken',userController.refreshToken)
 router.post("/:id/uploadimg",uploadImage.single("user_img"), userController.uploadPersonalImg);
 
+router.get('/:id/showimg',userController.getImg);
+
+
 module.exports = router;
