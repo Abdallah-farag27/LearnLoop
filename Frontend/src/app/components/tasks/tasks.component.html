@@ -1,0 +1,113 @@
+<div class="tasks-container">
+  <h2 class="tasks-title">Task Central</h2>
+
+  <!-- Add Task Form -->
+  <form (ngSubmit)="addTask()" class="add-task-form" *ngIf="!editingTask">
+    <h3 class="form-title">Create New Task</h3>
+    <div class="form-grid">
+      <div class="form-group full-width">
+        <label for="title">Task Title</label>
+        <input [(ngModel)]="newTask.title" name="title" id="title" placeholder="Enter task title" required>
+      </div>
+      <div class="form-group full-width">
+        <label for="description">Description</label>
+        <textarea [(ngModel)]="newTask.description" name="description" id="description" placeholder="Enter description"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="status">Status</label>
+        <select [(ngModel)]="newTask.status" name="status" id="status">
+          <option value="todo">To Do</option>
+          <option value="in-progress">In Progress</option>
+          <option value="done">Done</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="dueDate">Due Date</label>
+        <input [(ngModel)]="newTask.dueDate" name="dueDate" id="dueDate" type="date" required>
+      </div>
+      <div class="form-group full-width">
+        <label for="users">Users (comma-separated IDs)</label>
+        <input [(ngModel)]="newTask.users" name="users" id="users" placeholder="Enter user IDs">
+      </div>
+      <div class="form-actions full-width">
+        <button type="submit" class="submit-btn">Add Task</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Edit Task Form -->
+  <form (ngSubmit)="updateTask()" *ngIf="editingTask" class="add-task-form">
+    <h3 class="form-title">Edit Task</h3>
+    <div class="form-grid">
+      <div class="form-group full-width">
+        <label for="edit-title">Task Title</label>
+        <input [(ngModel)]="editingTaskForm.title" name="title" id="edit-title" placeholder="Enter task title" required>
+      </div>
+      <div class="form-group full-width">
+        <label for="edit-description">Description</label>
+        <textarea [(ngModel)]="editingTaskForm.description" name="description" id="edit-description" placeholder="Enter description"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="edit-status">Status</label>
+        <select [(ngModel)]="editingTaskForm.status" name="status" id="edit-status">
+          <option value="todo">To Do</option>
+          <option value="in-progress">In Progress</option>
+          <option value="done">Done</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="edit-dueDate">Due Date</label>
+        <input [(ngModel)]="editingTaskForm.dueDate" name="dueDate" id="edit-dueDate" type="date" required>
+      </div>
+      <div class="form-group full-width">
+        <label for="edit-users">Users</label>
+        <input [(ngModel)]="editingTaskForm.users" name="users" id="edit-users" placeholder="Enter user IDs">
+      </div>
+      <div class="form-actions full-width">
+        <button type="submit" class="submit-btn">Update Task</button>
+        <button type="button" (click)="cancelEdit()" class="cancel-btn">Cancel</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Tasks Table -->
+  <table class="tasks-table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th>Users</th>
+        <th>Due Date</th>
+        <th>File</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let task of tasks">
+        <td data-label="Title">{{ task.title }}</td>
+        <td data-label="Description">{{ task.description }}</td>
+        <td data-label="Status" [class]="task.status">{{ task.status }}</td>
+        <td data-label="Users">{{ task.users?.join(', ') }}</td>
+        <td data-label="Due Date">{{ task.dueDate }}</td>
+        <td data-label="File">
+          <input type="file" (change)="uploadFile($event, task._id!)" *ngIf="task.filepath">
+          <button (click)="downloadFile(task._id!)" class="download-btn">Download</button>
+        </td>
+        <td data-label="Actions">
+          <button (click)="markAsDone(task)" class="action-btn done-btn">Done</button>
+          <button (click)="editTask(task)" class="action-btn edit-btn">Edit</button>
+          <button (click)="deleteTask(task._id!)" class="action-btn delete-btn">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Comments Section -->
+  <div *ngIf="tasks.length > 0" class="comments-section">
+    <h3 class="comments-title">Comments for {{ tasks[0].title }}</h3>
+    <ul>
+      <li *ngFor="let comment of tasks[0].comments">{{ comment.content }} by {{ comment.author }} on {{ comment.createdAt | date }}</li>
+    </ul>
+  </div>
+</div>
