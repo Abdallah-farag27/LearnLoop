@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { z } from 'zod';
 import { AuthService } from '@shared/services/auth.service';
 import { RouterModule, Router } from '@angular/router';
+import { ToastService } from '@shared/services/toast.service';
 // Zod schema for validation
 const registrationSchema = z.object({
   username: z.string()
@@ -37,7 +38,7 @@ export class RegistrationComponent {
   submitError = '';
   submitSuccess = false;
 
-  constructor(private fb: FormBuilder, private authService: AuthService) {
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router, public toast: ToastService) {
     this.registrationForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
@@ -86,16 +87,17 @@ export class RegistrationComponent {
           this.isSubmitting = false;
           this.submitSuccess = true;
           this.registrationForm.reset();
+          this.router.navigate(['/login']);
+          this.toast.success('User Signed Up successfully!', 'Success');
         },
         error: (err) => {
           this.isSubmitting = false;
-          this.submitError = err.error?.message || 'Signup failed';
+          this.toast.error(err.error?.message || 'Signup failed', "Failed");
         },
       });
 
     } catch (error: any) {
       if (error.errors) {
-        // Zod validation errors
         this.submitError = error.errors[0]?.message || 'Validation failed';
       } else {
         this.submitError = 'Registration failed. Please try again.';

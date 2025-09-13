@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { z } from 'zod';
 import { AuthService } from '@shared/services/auth.service';
 import { RouterModule, Router } from '@angular/router';
+import { ToastService } from '@shared/services/toast.service';
 
 // Zod schema for validation
 const loginSchema = z.object({
@@ -30,7 +31,7 @@ export class Login {
   submitError = '';
   submitSuccess = false;
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router, private toast: ToastService) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(5)]],
@@ -76,20 +77,22 @@ export class Login {
 
       this.authService.login(loginData).subscribe({
         next: (response) => {
-
-          localStorage.setItem('accessToken', response.accessToken);
-          localStorage.setItem('refreshToken', response.refreshToken);
+          console.log("The login response : ", response);
 
 
           this.isSubmitting = false;
           this.submitSuccess = true;
           this.loginForm.reset();
+          this.toast.success('Login successfully!', 'Success');
 
           this.router.navigate(['/home']);
         },
         error: (err) => {
           this.isSubmitting = false;
-          this.submitError = err.error?.message || 'Signup failed';
+          this.submitSuccess = false;
+          this.loginForm.reset();
+
+          this.toast.error(err.error?.message || 'Log in failed', "Failed");
         },
       });
 

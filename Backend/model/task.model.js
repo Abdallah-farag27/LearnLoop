@@ -14,7 +14,7 @@ const taskSchema = mongoose.Schema(
       default: "todo",
     },
     description: {
-      type:String
+      type: String
     },
     user:{
       type: mongoose.Schema.Types.ObjectId,
@@ -31,13 +31,13 @@ const taskSchema = mongoose.Schema(
       required: [true, "Task must have a due date"],
     },
     createdby: {
-      type : mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required : [true,"Task must have an admin"]
+      required: [true, "Task must have an admin"]
     },
-    filepath:{
-      type:String,
-      default:""
+    filepath: {
+      type: String,
+      default: ""
     }
   },
   {
@@ -45,6 +45,6 @@ const taskSchema = mongoose.Schema(
   }
 );
 
-const Tasks = mongoose.model("Tasks",taskSchema);
+const Tasks = mongoose.model("Tasks", taskSchema);
 module.exports = Tasks;
 
