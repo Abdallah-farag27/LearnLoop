@@ -7,20 +7,15 @@ router.use(Auth.auth);
 
 router.route('/')
 .get (taskController.getProjectTasks)
-.post(Auth.HasPersmissions,taskController.createTask);
+.post(Auth.HasPersmissions,uploadDocument.single("file"),taskController.createTask);
 
 router.route('/:taskId')
 .get(taskController.getTaskById)
-.patch(Auth.HasPersmissions,taskController.updateTask)
+.patch(Auth.HasPersmissions,uploadDocument.single("file"),taskController.updateTask)
 .delete(Auth.HasPersmissions,taskController.deleteTask);
 
-router.post(
-  "/:taskId/uploadfile",
-  Auth.HasPersmissions,
-  uploadDocument.single("file"),
-  taskController.uploadtaskfile
-);
 
+//show file or download it
 router.get("/:taskId/file",taskController.gettaskfile);
 
 module.exports = router;

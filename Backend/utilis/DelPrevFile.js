@@ -1,14 +1,18 @@
 const fs = require('fs');
 const path = require('path');
 
+const Defimgpath = path.join ("Uploads","Defaultimg");
+
 const DeleteFile = (fpath)=>{
-  const prevFilePath = path.join(__dirname, "..", fpath);
+
+  if (fpath === Defimgpath || fpath === "")
+    return;
+
   let isDeleted = false;
-  fs.access(prevFilePath, fs.constants.F_OK, (err) => {
+  fs.access(fpath, fs.constants.F_OK, (err) => {
     if (!err) {
-      fs.unlink(prevFilePath, (err) => {
-        if (err) 
-          console.log("Error deleting old file:", err);
+      fs.unlink(fpath, (err) => {
+        if (err) console.log("Error deleting old file:", err);
         else {
           console.log("Old file deleted successfully");
           isDeleted = true;
@@ -19,7 +23,7 @@ const DeleteFile = (fpath)=>{
   return isDeleted;
 } 
 
-module.exports = {DeleteFile,path};  
+module.exports = {DeleteFile,path,Defimgpath};  
 
 
 

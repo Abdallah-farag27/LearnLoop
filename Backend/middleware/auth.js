@@ -8,16 +8,15 @@ exports.auth = async (req, res, next) => {
       return res.status(401).json({ message: "You must login first" });
     }
     const decoded = await promisify(jwt.verify)(authorization, process.env.JWT_SECRET);
-    req.admin = decoded.admin;
+    req.user = decoded;
     return next();  
   } catch (error) {
-    console.log(error);
     res.status(403).json({ message: "Invalid token" });
   }
 };
 
 exports.HasPersmissions = (req,res,next) => {
-  if (req.admin) {
+  if (req.user.admin) {
     return next();
   }
   return res.status(403).json({ message: "You Do not have Permission!" });

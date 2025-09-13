@@ -3,7 +3,12 @@ const Filetypes = (type="img") => {
   if (type === "img")
     types = ["image/jpeg", "image/png", "text/plain"];
   else 
-    types = ["application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document","application/pdf"];
+    types = [
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/pdf",
+      "text/plain",
+    ];
   
   return types;
 }

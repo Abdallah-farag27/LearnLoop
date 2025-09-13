@@ -2,66 +2,24 @@ const User = require("../model/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const {promisify} = require('util');
-const {DeleteFile,path}  = require("../utilis/DelPrevFile");
-
-exports.getImg = async (req, res) => {
-  try {
-    const UserId = req.params.id;
-
-    let user = await User.findById(UserId, "img");
-    if (!user || !user.img) {
-      return res.status(401).json({
-        status: "fail",
-        message: "user is not found",
-      });
-    }
-
-    const imgpath = path.join(__dirname, "..", user.img);
-    return res.status(200).sendFile(imgpath);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-
-
-
-exports.uploadPersonalImg = async (req,res) =>{
-    try {
-    const userId = req.params.id;
-    const imagePath = path.join(__dirname,'..','Uploads','images','persons',req.file.filename);
-    let user = await User.findById(userId);
-
-    if (!user) {
-      return res.status(401).json({
-        status: "fail",
-        message: "user is not found",
-      });
-    }
-
-    if (user.img)
-      DeleteFile(user.img);
-
-    user.img = imagePath;
-    await user.save();
-  
-    res.status(200).json({
-      message: "Image uploaded successfully",
-      imagePath
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+const {DeleteFile,path,Defimgpath} = require("../utilis/DelPrevFile");
 
 exports.signup = async (req, res) => {
   try {
     const newUser = req.body;
     const user = await User.create(newUser);
+    
+    user.img = Defimgpath;
+    if (req.file) {
+      user.img = path.join("Uploads", "images", "persons", req.file.filename);
+    } 
+
+    await user.save();
+
     res.status(201).json({
       status: "success",
       data: {
-        user,
+        user
       },
     });
   } catch (error) {
@@ -96,8 +54,8 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid Email or Password!' })
     }
     
-    const accessToken = jwt.sign({ id: user._id, email: user.email, admin: user.admin },process.env.JWT_SECRET, { expiresIn: '4h' });
-    const refreshToken = jwt.sign({ id: user._id, email: user.email, admin: user.admin},process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
+    const accessToken = jwt.sign({ id: user._id,admin: user.admin },process.env.JWT_SECRET, { expiresIn: '4h' });
+    const refreshToken = jwt.sign({ id: user._id},process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
     
     user.refreshToken = refreshToken;
     await user.save();
@@ -129,13 +87,12 @@ exports.refreshToken = async (req,res) => {
     {
       return res.status(403).json({message:'There is no refreshToken'});
     }
-    let accessToken = jwt.sign({ id: user._id, email: user.email, admin: user.admin },process.env.JWT_SECRET, { expiresIn: '4h' });
+    let accessToken = jwt.sign({ id: user._id, username: user.username, admin: user.admin },process.env.JWT_SECRET, { expiresIn: '4h' });
     return res.status(200).json({message:'success',accessToken});
   }
   catch (error){
     res.status(403).json({message:'fail'});
 }};
-
 
 exports.getAllUsers = async (req, res) => {
   try {
@@ -175,7 +132,7 @@ exports.getUserByID = async (req, res) => {
     res.status(200).json({
       status: "success",
       data: {
-        user,
+        user
       },
     });
   } catch (err) {
@@ -188,29 +145,26 @@ exports.getUserByID = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    const {id} = req.params;
-    console.log(id,req.body);
-    const updates = req.body;
-    if (!id || !updates) {
-      return res.status(400).json({
-        status: "fail",
-        message: "user id or updates is required",
-      });
+    const user = await User.findById(req.user.id);
+    Object.assign(user,req.body);
+
+    if (req.file) {
+      if (user.img) 
+        DeleteFile(user.img);
+      user.img = path.join("Uploads","images","persons",req.file.filename);
     }
-    const user = await User.findByIdAndUpdate(id, updates, {
-      new: true,
-      runValidators: true,
-    });
-    if (!user) {
-      return res.status(404).json({
-        status: "fail",
-        message: "User not found",
-      });
+    else if (req.body.user_img) {
+      if (user.img) 
+        DeleteFile(user.img);
+      user.img = Defimgpath;
     }
+
+    await user.save();
+
     res.status(200).json({
       status: "success",
       data: {
-        user,
+        user
       },
     });
   } catch (err) {
@@ -223,23 +177,33 @@ exports.updateUser = async (req, res) => {
 
 exports.deleteUser = async (req, res) => {
   try {
-    const {id} = req.params;
+    if (!req.user.admin) {
+      console.log(req.user);
+      return res.status(400).json({
+        status: "fail",
+        message: "only Admins Can Delete Users",
+      });
+    }
+    const id  = req.params.id;
     if (!id) {
       return res.status(400).json({
         status: "fail",
-        message: "user id is required",
+        message: "userId is required",
       });
     }
-    const user = await User.findByIdAndDelete(id);
-    if (!user) {
+    const user = await User.findById(id);
+    if (!user || user.admin) {
       return res.status(404).json({
         status: "fail",
-        message: "User not found",
+        message: `User with username : ${user.username} is not found or he is Admin`,
       });
     }
+
+    await user.deleteOne();
+
     res.status(204).json({
       status: "success",
-      data: null,
+      data: `user with ${id} Deleted Successfuly`,
     });
   } catch (err) {
     res.status(500).json({
