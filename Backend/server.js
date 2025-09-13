@@ -3,6 +3,7 @@ const app = express();
 const cors = require('cors');
 require('dotenv').config({path:'./config.env'})
 const mongoose = require('mongoose');
+const path = require('path');
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
@@ -12,7 +13,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static("./Uploads"));
+app.use("/uploads", express.static(path.join(__dirname, "Uploads")));
 
 // routes 
 const UserRoutes = require('./routes/userRoutes');
@@ -29,7 +30,7 @@ app.use('/reviews',ReviewRoutes);
 
 
 // Connect DB
-mongoose.connect(process.env.ConnectionString).
+mongoose.connect(process.env.ConnectionString,).
 then(()=> console.log("Connected To DB")).
 catch((Error)=>{console.log(Error)})
 

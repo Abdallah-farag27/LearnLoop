@@ -4,7 +4,6 @@ const FileTypes = require("../utilis/FileTypes");
 
 const storage = multer.diskStorage({
   destination:(req,file,cb)=>{
-
   let dest = path.resolve('Uploads');
 
   if (file.fieldname === "user_img") {
@@ -34,6 +33,6 @@ const createFileFilter = (type) => {
 };
 
 const uploadImage = multer({ storage, fileFilter: createFileFilter("img") });
-const uploadDocument = multer({ storage, fileFilter: createFileFilter("doc") });
+const uploadDocument = multer({ storage, fileFilter: createFileFilter("file") });
 
 module.exports = { uploadImage, uploadDocument };

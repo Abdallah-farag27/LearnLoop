@@ -12,16 +12,15 @@ const taskSchema = mongoose.Schema(
       type: String,
       enum: ["todo", "in-progress", "done"],
       default: "todo",
-      required: true,
     },
     description: {
       type: String
     },
-    users: [{
+    user:{
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: [true, "Task must have an user"]
-    }],
+      required: [true, "Task must have an user"] 
+    },
     projectId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Projects",

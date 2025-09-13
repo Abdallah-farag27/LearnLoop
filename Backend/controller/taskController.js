@@ -1,4 +1,5 @@
 const Task = require("../model/task.model");
+const User = require("../model/user.model")
 const {DeleteFile,path} = require("../utilis/DelPrevFile");
 
 
@@ -12,7 +13,6 @@ exports.gettaskfile = async (req,res) =>{
       });
     }
     let task = await Task.findById(taskId,"filepath");
-    console.log(task);
 
     if (!task || !task.filepath) {
       return res.status(404).json({
@@ -20,13 +20,12 @@ exports.gettaskfile = async (req,res) =>{
         message: "File not found",
       });
     }
-    const filePath = path.join(__dirname, "..", task.filepath);
-
+    console.log(task.filepath);
     if (req.query.download){
-      return res.download(filePath);
+      return res.status(200).download(path.join(__dirname,"..",task.filepath));
     }
     else 
-      return res.sendFile(filePath);
+      return res.status(200).sendFile(path.join(__dirname,"..",task.filepath));
 
   }catch(err)
   {
@@ -34,35 +33,6 @@ exports.gettaskfile = async (req,res) =>{
     res.status(500).json({ error: err.message });
   }
 }
-
-
-exports.uploadtaskfile = async (req, res) => {
-  try {
-    const taskId = req.params.taskId;
-    const fpath = `/uploads/files/${req.file.filename}`;
-
-    let task = await Task.findById(taskId);
-    
-    if (!task) {
-      return res.status(401).json({
-        status: "fail",
-        message: "task is not found",
-      });
-    }
-
-    if (task.filepath) DeleteFile(task.filepath);
-
-    task.filepath = fpath;
-    await task.save();
-
-    res.status(200).json({
-      message: "file uploaded successfully",
-      fpath,
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
 
 exports.getProjectTasks = async (req, res) => {
   try {
@@ -74,7 +44,6 @@ exports.getProjectTasks = async (req, res) => {
       });
     }
     const tasks = await Task.find({ projectId })
-      .populate("users", "username")
       .populate("projectId", "title");
     res.status(200).json({
       status: "success",
@@ -101,18 +70,37 @@ exports.createTask = async (req, res) => {
       });
     }
 
-    const { title, descritpion,users, dueDate ,createdby} = req.body;
+    let filePath = ""; 
+    if (req.file) 
+      filePath = path.join("Uploads", "files", req.file.filename);
 
-    const newTask = await Task.create({title,descritpion,users,projectId,dueDate,createdby});
+    const user = await User.findOne({username:req.body.username,admin:false});
+    if (!user) {
+      return res.status(400).json({
+        status: "fail",
+        message: `User ${req.body.username} does not exist or is an Admin`,
+      });
+    }
+    const newTask = {
+      title: req.body.title,
+      description: req.body.description ? req.body.description : "",
+      user: user._id,
+      projectId: projectId,
+      dueDate: req.body.dueDate,
+      createdby: req.user.id,
+      filepath: filePath,
+    };
 
-    const task = await Task.findById(newTask._id)
-      .populate("users", "username")
-      .populate("projectId", "title");
+    const task = await Task.create(newTask);
+
+    await task.populate("user","username");
+    await task.populate("projectId","title");
+
 
     res.status(201).json({
       status: "success",
       data: {
-        task,
+        task
       },
     });
   } catch (err) {
@@ -168,19 +156,30 @@ exports.updateTask = async (req, res) => {
       });
     }
 
-    const updatedTask = await Task.findByIdAndUpdate(taskId, req.body, {
-      new: true,
-      runValidators: true,
-    })
-      .populate("users", "username")
-      .populate("projectId", "title");
-
+    const updatedTask = await Task.findById(taskId);
     if (!updatedTask) {
       return res.status(404).json({
         status: "fail",
         message: "Task not found",
       });
     }
+
+    Object.assign(updatedTask, req.body);
+
+    if (req.file) {
+      DeleteFile(updatedTask.filepath);
+      updatedTask.filepath = path.join("Uploads","files",req.file.filename);
+    }
+    else if (req.body.file) {
+      DeleteFile(updatedTask.filepath);
+      updatedTask.filepath = ""
+    }
+
+    await updatedTask.save();
+
+
+    await updatedTask.populate("user", "username")
+    await updatedTask.populate("projectId", "title");
 
     res.status(200).json({
       status: "success",

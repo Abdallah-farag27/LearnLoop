@@ -8,9 +8,14 @@ exports.createReview = async (req, res) => {
       message: "Data are required"});
     }
   try {
-    const {rating,text,task,reviewer,user}= req.body;   
+    const reviewerId = req.user.id;
+    const {rating,text,task,user}= req.body;   
     const review = {
-      rating,text,task,reviewer,user
+      rating,
+      text,
+      task,
+      reviewerId,
+      user,
     };
     const newReview = await Review.create(review);
     if (newReview){

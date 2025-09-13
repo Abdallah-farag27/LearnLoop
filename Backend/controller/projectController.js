@@ -1,65 +1,25 @@
 const Project = require("../model/project.model");
-const {DeleteFile,path} = require("../utilis/DelPrevFile");
-
-exports.getImg = async (req,res) => {
-  try{
-    const projectId = req.params.projectId;
-    
-    let project = await Project.findById(projectId,"img");
-    if (!project || !project.img) {
-      return res.status(401).json({
-        status: "fail",
-        message: "Project is not found",
-      });
-    }
-    
-    const imgpath = path.join(__dirname,"..",project.img);
-    return res.status(200).sendFile(imgpath);
-  }
-  catch(err) {
-    res.status(500).json({ error: err.message });
-  }
-}
-
-
-exports.uploadProjectImg = async (req,res) =>{
-  try {
-    const projectId = req.params.projectId;
-    const imagePath = path.join(__dirname,"..","Uploads","images","projects", req.file.filename);
-    let project = await Project.findById(projectId);
-
-    if (!project) {
-      return res.status(401).json({
-        status: "fail",
-        message: "Project is not found",
-      });
-    }
-
-    if (project.img) DeleteFile(project.img);
-
-    project.img = imagePath;
-    await project.save();
-
-    res.status(200).json({
-      message: "Image uploaded successfully",
-      imagePath,
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-}
-
+const User = require("../model/user.model")
+const {DeleteFile,path,Defimgpath} = require("../utilis/DelPrevFile");
 
 exports.getAllProjects = async (req, res) => {
   try {
-    const adminId = req.query.adminId;
-    if (!adminId) {
+    console.log(req.user);
+    const userId = req.user.id;
+    if (!userId) {
       return res.status(400).json({
         status: "fail",
-        message: "There is no AdminID",
+        message: "There is no Projects yet",
       });
     }
-    const projects = await Project.find({admin:adminId}).populate("admin")
+
+    let projects = [];    
+    // this user is admin
+    if (req.user.admin)
+    projects = await Project.find({ admin: userId }).populate("admin");
+    else 
+    projects = await Project.find({users:userId}).populate("admin","username").populate("users","username");
+
     res.status(200).json({
       status: "success",length: projects.length,data: {projects}});
   } catch (err) {
@@ -78,14 +38,33 @@ exports.createProject = async (req, res) => {
       message: "There is no content",
     });
   }
-
   try {
+    let imagePath = Defimgpath;
+    if (req.file) {
+      imagePath = path.join("Uploads","images","projects",req.file.filename);
+    }
+    const userNames = req.body.usernames;
+
+    const users = await User.find({ username: { $in: userNames } , admin : false });
+
+    if (users.length !== userNames.length) {
+      const foundUsernames = users.map(u => u.username);
+      const notFound = userNames.filter(u => !foundUsernames.includes(u));
+      return res.status(404).json({
+        message: `These users were not found: ${notFound.join(", ")}`,
+      });
+    }
+
+    // Extract their IDs
+    const userIds = users.map(u => u._id);
+
     const newProject = {
       title: req.body.title,
       description: req.body.description,
-      admin: req.body.admin,
-      users: req.body.users,
-      dueDate: req.body.dueDate
+      admin: req.user.id,
+      users: userIds,
+      dueDate: req.body.dueDate,
+      img: imagePath,
     };
     const project = await Project.create(newProject);
     res.status(201).json({status: "success",data: {project}});
@@ -97,37 +76,36 @@ exports.createProject = async (req, res) => {
   }
 };
 exports.getProjectById = async (req, res) => {
-    try {
-    const id = req.params.projectId;
-    if (!id) {
-      return res.status(400).json({
-        status: "fail",
-        message: "Project id is required",
-      });
-    }
-    const project = await Project.findById(id)
-      .populate("admin", "username")
-      .populate("users", "username");
-    if (!project) {
-      return res.status(404).json({
-        status: "fail",
-        message: "Project not found",
-      });
-    }
-    res.status(200).json({
-      status: "success",
-      data: {
-        project,
-      },
-    });
-  } catch (err) {
-    res.status(500).json({
-      status: "error",
-      message: err.message,
+  try {
+  const id = req.params.projectId;
+  if (!id) {
+    return res.status(400).json({
+      status: "fail",
+      message: "Project id is required",
     });
   }
+  const project = await Project.findById(id)
+    .populate("admin", "username")
+    .populate("users", "username");
+  if (!project) {
+    return res.status(404).json({
+      status: "fail",
+      message: "Project not found",
+    });
+  }
+  res.status(200).json({
+    status: "success",
+    data: {
+      project,
+    },
+  });
+} catch (err) {
+  res.status(500).json({
+    status: "error",
+    message: err.message,
+  });
+}
 };
-
 exports.updateProject = async (req, res) => {
   try {
     const id = req.params.projectId;
@@ -137,24 +115,32 @@ exports.updateProject = async (req, res) => {
         message: "Project ID is required",
       });
     }
-    const updatedProject = await Project.findByIdAndUpdate(id, req.body, {
-      new: true,
-      runValidators: true,
-    })
-      .populate("admin", "username")
-      .populate("users", "username");
-    if (!updatedProject) {
-      return res.status(404).json({
-        status: "fail",
-        message: "Project not found",
-      });
+
+    const updatedProject = await Project.findById(id);
+    Object.assign(updatedProject, req.body);
+      
+    if (req.file) {
+      if (updatedProject.img) {
+        DeleteFile(updatedProject.img);
+      }
+      updatedProject.img = path.join("Uploads","images","projects",req.file.filename);
+    } else if (req.body.pro_img) {
+      if (updatedProject.img) {
+        DeleteFile(updatedProject.img);
+      }
+      updatedProject.img = Defimgpath;
     }
+
+    await updatedProject.save();
+    await updatedProject.populate("users", "username");
+    await updatedProject.populate("admin", "username");
+
     res.status(200).json({
-      status: "success",
-      data: {
-        project: updatedProject,
-      },
-    });
+    status: "success",
+    data: {
+      project: updatedProject,
+    },
+  });
   } catch (err) {
     res.status(500).json({
       status: "error",
@@ -162,7 +148,6 @@ exports.updateProject = async (req, res) => {
     });
   }
 };
-
 exports.deleteProject = async (req, res) => {
   try {
     const id = req.params.projectId;
@@ -190,19 +175,25 @@ exports.deleteProject = async (req, res) => {
     });
   }
 };
-
-
 exports.addMember = async (req, res) => {
   try {
     const projectId = req.params.projectId;
-    const userId = req.body.userId;
+    const userName = req.body.username;
 
-    if (!projectId || !userId) {
+    if (!projectId || !userName) {
       return res.status(400).json({
         status: "fail",
         message: "Project ID and member ID are required",
       });
     }
+    const userAdded = await User.findOne({ username: userName , admin : false});
+    if (!userAdded) {
+      return res.status(400).json({
+        status: "fail",
+        message: `this User ${userName} is Admin or Does not Exist
+        Add Another One`,
+      });
+    } 
 
     const project = await Project.findById(projectId);
     if (!project) {
@@ -213,15 +204,14 @@ exports.addMember = async (req, res) => {
     }
 
     // Prevent duplicate members
-    // 409 conflict
-    if (project.users.includes(userId)) {
+    if (project.users.find(u => u.equals(userAdded._id))) {
       return res.status(409).json({
         status: "fail",
         message: "Member already exists in project",
       });
     }
 
-    project.users.push(userId);
+    project.users.push(userAdded._id);
     await project.save();
 
     const updatedProject = await Project.findById(projectId)
@@ -241,7 +231,6 @@ exports.addMember = async (req, res) => {
     });
   }
 };
-
 exports.removeMember = async (req, res) => {
   try {
     const projectId = req.params.projectId;
@@ -254,34 +243,25 @@ exports.removeMember = async (req, res) => {
       });
     }
 
-    const project = await Project.findById(projectId);
+    const project = await Project.findByIdAndUpdate(projectId,
+      {$pull : {users: userId}},
+      {new : true}
+    );
+
     if (!project) {
       return res.status(404).json({
         status: "fail",
         message: "Project not found",
       });
     }
-
-    const userIndex = project.users.indexOf(userId);
-    if (userIndex === -1) {
-      return res.status(404).json({
-        status: "fail",
-        message: "Member not found in project",
-      });
-    }
-
-    project.users.splice(userIndex, 1);
-    await project.save();
-
-    const updatedProject = await Project.findById(projectId)
-      .populate("admin", "username")
-      .populate("users", "username");
+    await project.populate("admin", "username");
+    await project.populate("users", "username");
 
     res.status(200).json({
       status: "success",
       message: "Member removed successfully",
       data: {
-        project: updatedProject,
+        project
       },
     });
   } catch (err) {
