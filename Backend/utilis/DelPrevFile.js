@@ -1,12 +1,16 @@
 const fs = require('fs');
-const path = require('path');
+const {sep} = require('path');
 
-const Defimgpath = path.join ("Uploads","Defaultimg");
+const Defimgpath = "uploads/Defaultimg.jpg";
 
 const DeleteFile = (fpath)=>{
 
   if (fpath === Defimgpath || fpath === "")
     return;
+
+  // using regex to converting / to \ for saving sep from path package
+  // seperator differ between Operating systems  
+  fpath = fpath.replace(/\//g, sep);
 
   let isDeleted = false;
   fs.access(fpath, fs.constants.F_OK, (err) => {
@@ -23,7 +27,7 @@ const DeleteFile = (fpath)=>{
   return isDeleted;
 } 
 
-module.exports = {DeleteFile,path,Defimgpath};  
+module.exports = {DeleteFile,Defimgpath};  
 
 
 

@@ -1,6 +1,6 @@
 const Project = require("../model/project.model");
 const User = require("../model/user.model")
-const {DeleteFile,path,Defimgpath} = require("../utilis/DelPrevFile");
+const {DeleteFile,Defimgpath} = require("../utilis/DelPrevFile");
 
 exports.getAllProjects = async (req, res) => {
   try {
@@ -16,7 +16,7 @@ exports.getAllProjects = async (req, res) => {
     let projects = [];    
     // this user is admin
     if (req.user.admin)
-    projects = await Project.find({ admin: userId }).populate("admin");
+    projects = await Project.find({ admin: userId });
     else 
     projects = await Project.find({users:userId}).populate("admin","username").populate("users","username");
 
@@ -41,7 +41,7 @@ exports.createProject = async (req, res) => {
   try {
     let imagePath = Defimgpath;
     if (req.file) {
-      imagePath = path.join("Uploads","images","projects",req.file.filename);
+      imagePath = `uploads/images/projects/${req.file.filename}`;
     }
     const userNames = req.body.usernames;
 
@@ -123,7 +123,7 @@ exports.updateProject = async (req, res) => {
       if (updatedProject.img) {
         DeleteFile(updatedProject.img);
       }
-      updatedProject.img = path.join("Uploads","images","projects",req.file.filename);
+      updatedProject.img = `Uploads/images/projects/${req.file.filename}`;
     } else if (req.body.pro_img) {
       if (updatedProject.img) {
         DeleteFile(updatedProject.img);

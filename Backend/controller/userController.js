@@ -2,7 +2,7 @@ const User = require("../model/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const {promisify} = require('util');
-const {DeleteFile,path,Defimgpath} = require("../utilis/DelPrevFile");
+const {DeleteFile,Defimgpath} = require("../utilis/DelPrevFile");
 
 exports.signup = async (req, res) => {
   try {
@@ -11,7 +11,7 @@ exports.signup = async (req, res) => {
     
     user.img = Defimgpath;
     if (req.file) {
-      user.img = path.join("Uploads", "images", "persons", req.file.filename);
+      user.img = `uploads/images/persons/${req.file.filename}`;
     } 
 
     await user.save();
@@ -151,7 +151,7 @@ exports.updateUser = async (req, res) => {
     if (req.file) {
       if (user.img) 
         DeleteFile(user.img);
-      user.img = path.join("Uploads","images","persons",req.file.filename);
+      user.img = `uploads/images/persons/${req.file.filename}`;
     }
     else if (req.body.user_img) {
       if (user.img) 
