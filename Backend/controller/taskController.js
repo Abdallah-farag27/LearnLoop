@@ -1,6 +1,6 @@
 const Task = require("../model/task.model");
 const User = require("../model/user.model")
-const {DeleteFile,path} = require("../utilis/DelPrevFile");
+const {DeleteFile} = require("../utilis/DelPrevFile");
 
 
 exports.gettaskfile = async (req,res) =>{
@@ -22,10 +22,10 @@ exports.gettaskfile = async (req,res) =>{
     }
     console.log(task.filepath);
     if (req.query.download){
-      return res.status(200).download(path.join(__dirname,"..",task.filepath));
+      return res.status(200).download(`uploads/files/${task.filepath}`);
     }
     else 
-      return res.status(200).sendFile(path.join(__dirname,"..",task.filepath));
+      return res.status(200).sendFile(`uploads/files/${task.filepath}`);
 
   }catch(err)
   {
@@ -72,7 +72,7 @@ exports.createTask = async (req, res) => {
 
     let filePath = ""; 
     if (req.file) 
-      filePath = path.join("Uploads", "files", req.file.filename);
+      filePath = `uploads/files/${req.file.filename}`;
 
     const user = await User.findOne({username:req.body.username,admin:false});
     if (!user) {
@@ -168,7 +168,7 @@ exports.updateTask = async (req, res) => {
 
     if (req.file) {
       DeleteFile(updatedTask.filepath);
-      updatedTask.filepath = path.join("Uploads","files",req.file.filename);
+      updatedTask.filepath =`uploads/files/${req.file.filename}`;
     }
     else if (req.body.file) {
       DeleteFile(updatedTask.filepath);

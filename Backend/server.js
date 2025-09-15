@@ -13,7 +13,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
-app.use("/uploads", express.static(path.join(__dirname, "Uploads")));
+app.use("/uploads", express.static("uploads"));
 
 // routes 
 const UserRoutes = require('./routes/userRoutes');

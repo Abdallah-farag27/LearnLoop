@@ -4,8 +4,7 @@ const FileTypes = require("../utilis/FileTypes");
 
 const storage = multer.diskStorage({
   destination:(req,file,cb)=>{
-  let dest = path.resolve('Uploads');
-
+  let dest = path.resolve('uploads');
   if (file.fieldname === "user_img") {
     dest = path.join(dest, "images", "persons");
   } else if (file.fieldname === "pro_img")
@@ -21,6 +20,8 @@ const storage = multer.diskStorage({
 })
 
 const createFileFilter = (type) => {
+
+
   const allowedTypes = FileTypes(type);
   return (req, file, cb) => {
     if (allowedTypes.includes(file.mimetype)) {
