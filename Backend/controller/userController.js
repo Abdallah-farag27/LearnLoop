@@ -1,12 +1,15 @@
 const User = require("../model/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+// const { promisify } = require('util');
+// const { DeleteFile, path, Defimgpath } = require("../utilis/DelPrevFile");
 const { promisify } = require('util');
-const { DeleteFile, path, Defimgpath } = require("../utilis/DelPrevFile");
+const { DeleteFile, Defimgpath } = require("../utilis/DelPrevFile");
 
 exports.signup = async (req, res) => {
   try {
     const newUser = req.body;
+    newUser.admin = newUser.role === "admin"
     const user = await User.create(newUser);
 
     user.img = Defimgpath;
@@ -63,7 +66,7 @@ exports.login = async (req, res) => {
     res.status(200).json({
       status: "success",
       message: "Login successful",
-      accessToken, refreshToken, id: user.id
+      accessToken, refreshToken
     });
   } catch (error) {
     res.status(500).json({
@@ -212,3 +215,34 @@ exports.deleteUser = async (req, res) => {
     });
   }
 };
+
+exports.getUserByToken = async (req, res, next) => {
+  try {
+    const id = req.user.id;
+    if (!id) {
+      return res.status(400).json({
+        status: "fail",
+        message: "User id is required",
+      });
+    }
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({
+        status: "fail",
+        message: "User not found",
+      });
+    }
+    res.status(200).json({
+      status: "success",
+      data: {
+        user
+      },
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "error",
+      message: err.message,
+    });
+  }
+}
+

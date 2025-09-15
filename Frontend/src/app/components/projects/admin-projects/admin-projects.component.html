@@ -1,0 +1,97 @@
+<div class="p-6">
+    <h2
+        class="text-3xl font-bold mb-8 text-center text-gray-800">
+        My Projects
+    </h2>
+
+    <div
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- Plus Card -->
+        <div class="flex flex-col items-center justify-center h-56 rounded-2xl shadow-md cursor-pointer bg-gradient-to-br from-[#2599a8] to-indigo-600 text-white hover:scale-105 hover:shadow-xl transition-all duration-200"
+            (click)="openAddForm()">
+            <span
+                class="text-5xl font-bold">+</span>
+            <p
+                class="mt-2 text-sm font-medium">
+                Add New
+                Project</p>
+        </div>
+
+        <!-- Project Cards -->
+        <div *ngFor="let project of adminProjects$ | async"
+            (click)="openDetails(project._id)"
+            class="group relative overflow-hidden rounded-2xl shadow-md bg-white cursor-pointer hover:shadow-xl hover:scale-[1.02] transition-all duration-200">
+
+            <!-- Header -->
+            <div
+                class="bg-gradient-to-r from-[#2599a8] to-indigo-600 p-4">
+                <h3
+                    class="text-lg font-semibold text-white truncate">
+                    {{
+                    project.title
+                    }}
+                </h3>
+            </div>
+
+            <!-- Content -->
+            <div class="p-4">
+                <p
+                    class="text-sm text-gray-600 mb-3 line-clamp-2">
+                    {{
+                    project.description
+                    }}
+                </p>
+                <div
+                    class="flex items-center justify-between text-xs text-gray-500">
+                    <span
+                        class="flex items-center space-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="h-4 w-4 text-gray-400"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M8 7V3m8 4V3m-9 8h10m-11 9h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v11a2 2 0 002 2z" />
+                        </svg>
+                        <span>Due:
+                            {{
+                            project.dueDate
+                            |
+                            date
+                            }}</span>
+                    </span>
+
+                    <span
+                        class="flex items-center space-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="h-4 w-4 text-gray-400"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M17 20h5V4H2v16h5m10 0V10M7 20V10m4 10V10m4 10V10" />
+                        </svg>
+                        <span>{{
+                            project?.users?.length
+                            ||
+                            0
+                            }}
+                            Members</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Hover Overlay -->
+            <div
+                class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity">
+            </div>
+        </div>
+    </div>
+</div>

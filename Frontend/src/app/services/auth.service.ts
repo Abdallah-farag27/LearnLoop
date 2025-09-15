@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { tap, map, catchError, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
+import Swal from 'sweetalert2';
 
 export interface User {
   id: string;
@@ -47,7 +48,7 @@ export class AuthService {
         if (res.refreshToken) this.setRefreshToken(res.refreshToken);
 
         // fetch user by returned id
-        return this.getUserById(res.id).pipe(
+        return this.getUserByToken(res.id).pipe(
           tap(user => {
             console.log('Fetched user:', user);
             this.currentUser$.next(user); // now emits pure User object
@@ -73,9 +74,9 @@ export class AuthService {
 
 
   /** fetch profile by id */
-  getUserById(userId: string): Observable<User> {
+  getUserByToken(userId: string): Observable<User> {
     return this.http
-      .get<{ status: string; data: { user: User } }>(`${this.baseUrl}/${userId}`)
+      .get<{ status: string; data: { user: User } }>(`${this.baseUrl}/me`)
       .pipe(
         map(res => res.data.user) // unwrap the user
       );
@@ -127,16 +128,54 @@ export class AuthService {
 
   /** logout */
   logout() {
-    this.accessToken = null;
-    this.refreshToken = null;
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    this.currentUser$.next(null);
-    this.router.navigate(['/home']);
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you really want to log out?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, log out',
+    }).then(result => {
+      if (result.isConfirmed) {
+        Swal.fire('Logged out!', '', 'success');
+        this.accessToken = null;
+        this.refreshToken = null;
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        this.currentUser$.next(null);
+        this.router.navigate(['/home']);
+      }
+    });
   }
 
   /** signup */
   signup(payload: SignupPayload): Observable<any> {
     return this.http.post(`${this.baseUrl}/signup`, payload);
   }
+
+  /** try to load the logged-in user if token exists */
+  getMe(): Observable<User> {
+    return this.http
+      .get<{ status: string; data: { user: User } }>(`${this.baseUrl}/me`)
+      .pipe(map(res => res.data.user));
+  }
+  /** try to load user on app init if token exists */
+  loadUser(): void {
+    const token = this.getAccessToken();
+    if (token && !this.isAccessTokenExpired()) {
+      console.log(123123);
+      this.getMe().subscribe({
+        next: user => {
+          console.log('[AuthService] Restored user from token:', user);
+          this.currentUser$.next(user);
+        },
+        error: err => {
+          console.error('[AuthService] Failed to restore user:', err);
+          this.logout(); // cleanup if token invalid
+        }
+      });
+    }
+  }
+
 }

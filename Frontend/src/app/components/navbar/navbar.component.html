@@ -51,10 +51,10 @@
             <!-- Admin -->
             <ng-container
               *ngIf="user.admin; else normalUserLinks">
-              <a routerLink="/admin"
+              <a routerLink="/projects"
                 routerLinkActive="bg-blue-700 bg-opacity-50"
                 class="text-white hover:bg-blue-700 hover:bg-opacity-50 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105">
-                Admin Panel
+                Projects
               </a>
               <button
                 (click)="authService.logout()"
@@ -87,7 +87,7 @@
               class="text-white hover:bg-blue-700 hover:bg-opacity-50 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105">
               Login
             </a>
-            <a routerLink="/signup"
+            <a routerLink="/register"
               routerLinkActive="bg-blue-700 bg-opacity-50"
               class="text-white hover:bg-blue-700 hover:bg-opacity-50 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105">
               Signup
@@ -180,7 +180,7 @@
               Profile
             </a>
             <button
-              (click)="authService.logout(); closeMobileMenu()"
+              (click)="alLogout()"
               class="w-full text-left text-white hover:bg-red-600 hover:bg-opacity-80 block px-3 py-2 rounded-lg text-base font-medium transition-colors duration-200">
               Logout
             </button>
@@ -196,7 +196,7 @@
             (click)="closeMobileMenu()">
             Login
           </a>
-          <a routerLink="/signup"
+          <a routerLink="/register"
             routerLinkActive="bg-[#2599a8] bg-opacity-70"
             class="text-white hover:bg-[#2599a8] hover:bg-opacity-70 block px-3 py-2 rounded-lg text-base font-medium transition-colors duration-200"
             (click)="closeMobileMenu()">

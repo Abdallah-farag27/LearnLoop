@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 exports.auth = async (req, res, next) => {
   try {
     const authorization = req.headers.authorization.split(" ")[1];
-    console.log(authorization);
     if (!authorization) {
       return res.status(401).json({ message: "You must login first" });
     }

@@ -1,0 +1,38 @@
+<div *ngIf="project$ | async as project"
+    class="max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-xl">
+    <h2
+        class="text-2xl font-bold mb-4">
+        {{ project.title }}
+    </h2>
+    <p class="mb-2">{{
+        project.description }}
+    </p>
+    <p
+        class="text-sm text-gray-600">
+        Due Date: {{
+        project.dueDate | date
+        }}</p>
+
+    <div class="mt-4">
+        <h3
+            class="font-semibold">
+            Admin:</h3>
+        <p>{{
+            project.admin.username
+            }}</p>
+    </div>
+
+    <div class="mt-4">
+        <h3
+            class="font-semibold">
+            Members:</h3>
+        <ul
+            class="list-disc list-inside">
+            <li
+                *ngFor="let user of project.users">
+                {{
+                user.username
+                }}</li>
+        </ul>
+    </div>
+</div>
