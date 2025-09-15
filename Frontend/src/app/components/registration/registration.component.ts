@@ -17,7 +17,7 @@ const registrationSchema = z.object({
   password: z.string()
     .min(5, 'Password must be at least 5 characters'),
   confirmPassword: z.string(),
-  role: z.enum(['admin', 'user']).default('user')
+  role: z.enum(['admin', 'user']).default('user'),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],

@@ -1,0 +1,96 @@
+<div *ngIf="project$ | async as project"
+    class="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden mt-20">
+
+    <!-- Header -->
+    <div
+        class="bg-gradient-to-r from-[#2599a8] to-indigo-600 p-6">
+        <h2
+            class="text-3xl font-bold text-white">
+            {{ project.title
+            }}
+        </h2>
+        <p
+            class="text-blue-100 mt-1 flex items-center space-x-2">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10m-11 9h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v11a2 2 0 002 2z" />
+            </svg>
+            <span>Due: {{
+                project.dueDate
+                | date
+                }}</span>
+        </p>
+    </div>
+
+    <!-- Content -->
+    <div class="p-6">
+        <!-- Description -->
+        <p
+            class="text-gray-700 mb-6 leading-relaxed">
+            {{
+            project.description
+            }}
+        </p>
+
+        <!-- Admin -->
+        <div class="mb-6">
+            <h3
+                class="text-lg font-semibold flex items-center space-x-2 text-gray-800">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-[#2599a8]"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5.121 17.804A8 8 0 1116.97 6.05a8 8 0 01-11.849 11.755z" />
+                </svg>
+                <span>Admin</span>
+            </h3>
+            <p
+                class="mt-1 text-gray-600">
+                {{
+                project.admin.username
+                }}
+            </p>
+        </div>
+
+        <!-- Members -->
+        <div>
+            <h3
+                class="text-lg font-semibold flex items-center space-x-2 text-gray-800">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-indigo-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M17 20h5V4H2v16h5m10 0V10M7 20V10m4 10V10m4 10V10" />
+                </svg>
+                <span>Members</span>
+            </h3>
+            <div
+                class="mt-3 flex flex-wrap gap-2">
+                <span
+                    *ngFor="let user of project.users"
+                    class="px-3 py-1 rounded-full text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                    {{
+                    user.username
+                    }}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>

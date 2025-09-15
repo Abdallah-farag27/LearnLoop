@@ -27,15 +27,17 @@ export class NavbarComponent implements OnInit {
     // subscribe to user changes
     this.authService.currentUser$.subscribe(user => {
       this.user = user;
-      console.log('Navbar detected user change:', user);
     });
   }
   navigateToRegister() {
     this.closeMobileMenu();
     this.router.navigate(['/register']);
   }
-  logout() {
+
+
+  alLogout() {
     this.authService.logout();
     this.closeMobileMenu();
   }
+
 }

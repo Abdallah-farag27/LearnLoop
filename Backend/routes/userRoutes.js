@@ -8,6 +8,8 @@ router.route("/")
   .get(userController.getAllUsers)
   .patch(auth, uploadImage.single("user_img"), userController.updateUser);
 
+router.route("/me")
+  .get(auth, userController.getUserByToken)
 
 router.route('/:id')
   .get(userController.getUserByID)
