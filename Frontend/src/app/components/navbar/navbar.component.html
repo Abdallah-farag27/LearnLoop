@@ -1,148 +1,208 @@
-<nav class="bg-gradient-to-r from-[#2599a8] to-indigo-600 shadow-xl sticky top-0 z-50">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between items-center h-16">
+<nav
+  class="bg-gradient-to-r from-[#2599a8] to-indigo-600 shadow-xl sticky top-0 z-50">
+  <div
+    class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div
+      class="flex justify-between items-center h-16">
+
       <!-- Logo Section -->
-      <div class="flex items-center space-x-4">
-        <div class="flex-shrink-0 flex items-center">
-          <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md">
+      <div
+        class="flex items-center space-x-4">
+        <div
+          class="flex-shrink-0 flex items-center">
+          <div
+            class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md">
             <img
               src="assets/logo.png"
               alt="LearnLoop Logo"
               class="w-6 h-6 object-contain"
-              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-            />
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
             <div
-              class="hidden w-6 h-6 bg-[#2599a8] rounded-full items-center justify-center text-white font-bold text-sm"
-            >
+              class="hidden w-6 h-6 bg-[#2599a8] rounded-full items-center justify-center text-white font-bold text-sm">
               LL
             </div>
           </div>
-          <span class="ml-3 text-white text-xl font-bold tracking-tight"> LearnLoop </span>
+          <span
+            class="ml-3 text-white text-xl font-bold tracking-tight">LearnLoop</span>
         </div>
       </div>
 
       <!-- Desktop Navigation Links -->
-      <div class="hidden md:block">
-        <div class="ml-10 flex items-baseline space-x-1">
-          <a
-            routerLink="/home"
+      <div
+        class="hidden md:block">
+        <div
+          class="ml-10 flex items-baseline space-x-1">
+
+          <!-- Always visible -->
+          <a routerLink="/home"
             routerLinkActive="bg-blue-700 bg-opacity-50"
-            class="text-white hover:bg-blue-700 hover:bg-opacity-50 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105"
-          >
+            class="text-white hover:bg-blue-700 hover:bg-opacity-50 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105">
             Home
           </a>
-          <a
-            routerLink="/register"
+          <a routerLink="/projects/example-project-id/tasks"
             routerLinkActive="bg-blue-700 bg-opacity-50"
-            class="text-white hover:bg-blue-700 hover:bg-opacity-50 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105"
-          >
-            Register
-          </a>
-          <a
-            routerLink="/login"
-            routerLinkActive="bg-blue-700 bg-opacity-50"
-            class="text-white hover:bg-blue-700 hover:bg-opacity-50 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105"
-          >
-            Login
-          </a>
-          <a
-            routerLink="/projects/example-project-id/tasks"
-            routerLinkActive="bg-blue-700 bg-opacity-50"
-            class="text-white hover:bg-blue-700 hover:bg-opacity-50 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105"
-          >
+            class="text-white hover:bg-blue-700 hover:bg-opacity-50 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105">
             Tasks
           </a>
+
+          <!-- Auth Links -->
+          <ng-container
+            *ngIf="authService.currentUser$ | async as user; else guestLinks">
+            <!-- Admin -->
+            <ng-container
+              *ngIf="user.admin; else normalUserLinks">
+              <a routerLink="/admin"
+                routerLinkActive="bg-blue-700 bg-opacity-50"
+                class="text-white hover:bg-blue-700 hover:bg-opacity-50 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105">
+                Admin Panel
+              </a>
+              <button
+                (click)="authService.logout()"
+                class="text-white hover:bg-red-600 hover:bg-opacity-80 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200">
+                Logout
+              </button>
+            </ng-container>
+
+            <!-- Normal User -->
+            <ng-template
+              #normalUserLinks>
+              <a routerLink="/profile"
+                routerLinkActive="bg-blue-700 bg-opacity-50"
+                class="text-white hover:bg-blue-700 hover:bg-opacity-50 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105">
+                Profile
+              </a>
+              <button
+                (click)="authService.logout()"
+                class="text-white hover:bg-red-600 hover:bg-opacity-80 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200">
+                Logout
+              </button>
+            </ng-template>
+          </ng-container>
+
+          <!-- Guest Links -->
+          <ng-template
+            #guestLinks>
+            <a routerLink="/login"
+              routerLinkActive="bg-blue-700 bg-opacity-50"
+              class="text-white hover:bg-blue-700 hover:bg-opacity-50 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105">
+              Login
+            </a>
+            <a routerLink="/signup"
+              routerLinkActive="bg-blue-700 bg-opacity-50"
+              class="text-white hover:bg-blue-700 hover:bg-opacity-50 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105">
+              Signup
+            </a>
+          </ng-template>
         </div>
       </div>
-
-      <!-- CTA Button (Desktop) -->
-      <!-- <div class="hidden md:block">
-        <button
-          class="bg-white text-[#2599a8] hover:bg-blue-50 font-semibold py-2 px-6 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200"
-          (click)="navigateToRegister()">
-          Get Started
-        </button>
-      </div> -->
 
       <!-- Mobile menu button -->
       <div class="md:hidden">
         <button
           (click)="toggleMobileMenu()"
           class="text-white hover:bg-[#2599a8] hover:bg-opacity-70 p-2 rounded-lg transition-colors duration-200"
-          aria-label="Toggle menu"
-        >
-          <svg
-            class="h-6 w-6"
+          aria-label="Toggle menu">
+          <svg class="h-6 w-6"
             [class.hidden]="isMobileMenuOpen"
             fill="none"
             viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
+            stroke="currentColor">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M4 6h16M4 12h16M4 18h16"
-            />
+              d="M4 6h16M4 12h16M4 18h16" />
           </svg>
-          <svg
-            class="h-6 w-6"
+          <svg class="h-6 w-6"
             [class.hidden]="!isMobileMenuOpen"
             fill="none"
             viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
+            stroke="currentColor">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
+              d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
     </div>
 
     <!-- Mobile Navigation Menu -->
-    <div class="md:hidden" [class.hidden]="!isMobileMenuOpen">
-      <div class="px-2 pt-2 pb-3 space-y-1 border-t border-[#2599a8] border-opacity-25">
-        <!-- Center Navigation Links (Mobile) -->
-        <a
-          routerLink="/home"
+    <div class="md:hidden"
+      [class.hidden]="!isMobileMenuOpen">
+      <div
+        class="px-2 pt-2 pb-3 space-y-1 border-t border-[#2599a8] border-opacity-25">
+        <!-- Always visible -->
+        <a routerLink="/home"
           routerLinkActive="bg-[#2599a8] bg-opacity-70"
           class="text-white hover:bg-[#2599a8] hover:bg-opacity-70 block px-3 py-2 rounded-lg text-base font-medium transition-colors duration-200"
-          (click)="closeMobileMenu()"
-        >
+          (click)="closeMobileMenu()">
           Home
         </a>
-        <a
-          routerLink="/projects/example-project-id/tasks"
+        <a routerLink="/projects/example-project-id/tasks"
           routerLinkActive="bg-[#2599a8] bg-opacity-70"
           class="text-white hover:bg-[#2599a8] hover:bg-opacity-70 block px-3 py-2 rounded-lg text-base font-medium transition-colors duration-200"
-          (click)="closeMobileMenu()"
-        >
+          (click)="closeMobileMenu()">
           Tasks
         </a>
-        <!-- Divider -->
-        <hr class="border-[#2599a8] border-opacity-25 my-2" />
 
-        <!-- Auth Links (Mobile) -->
-        <a
-          routerLink="/login"
-          routerLinkActive="bg-[#2599a8] bg-opacity-70"
-          class="text-white hover:bg-[#2599a8] hover:bg-opacity-70 block px-3 py-2 rounded-lg text-base font-medium transition-colors duration-200"
-          (click)="closeMobileMenu()"
-        >
-          Login
-        </a>
-        <a
-          routerLink="/register"
-          routerLinkActive="bg-[#2599a8] bg-opacity-70"
-          class="text-white hover:bg-[#2599a8] hover:bg-opacity-70 block px-3 py-2 rounded-lg text-base font-medium transition-colors duration-200"
-          (click)="closeMobileMenu()"
-        >
-          Register
-        </a>
+        <!-- Divider -->
+        <hr
+          class="border-[#2599a8] border-opacity-25 my-2" />
+
+        <!-- Auth Links -->
+        <ng-container
+          *ngIf="authService.currentUser$ | async as user; else guestMobileLinks">
+          <!-- Admin -->
+          <ng-container
+            *ngIf="user.admin; else normalUserMobileLinks">
+            <a routerLink="/admin"
+              routerLinkActive="bg-[#2599a8] bg-opacity-70"
+              class="text-white hover:bg-[#2599a8] hover:bg-opacity-70 block px-3 py-2 rounded-lg text-base font-medium transition-colors duration-200"
+              (click)="closeMobileMenu()">
+              Admin Panel
+            </a>
+            <button
+              (click)="authService.logout(); closeMobileMenu()"
+              class="w-full text-left text-white hover:bg-red-600 hover:bg-opacity-80 block px-3 py-2 rounded-lg text-base font-medium transition-colors duration-200">
+              Logout
+            </button>
+          </ng-container>
+
+          <!-- Normal User -->
+          <ng-template
+            #normalUserMobileLinks>
+            <a routerLink="/profile"
+              routerLinkActive="bg-[#2599a8] bg-opacity-70"
+              class="text-white hover:bg-[#2599a8] hover:bg-opacity-70 block px-3 py-2 rounded-lg text-base font-medium transition-colors duration-200"
+              (click)="closeMobileMenu()">
+              Profile
+            </a>
+            <button
+              (click)="authService.logout(); closeMobileMenu()"
+              class="w-full text-left text-white hover:bg-red-600 hover:bg-opacity-80 block px-3 py-2 rounded-lg text-base font-medium transition-colors duration-200">
+              Logout
+            </button>
+          </ng-template>
+        </ng-container>
+
+        <!-- Guest Links -->
+        <ng-template
+          #guestMobileLinks>
+          <a routerLink="/login"
+            routerLinkActive="bg-[#2599a8] bg-opacity-70"
+            class="text-white hover:bg-[#2599a8] hover:bg-opacity-70 block px-3 py-2 rounded-lg text-base font-medium transition-colors duration-200"
+            (click)="closeMobileMenu()">
+            Login
+          </a>
+          <a routerLink="/signup"
+            routerLinkActive="bg-[#2599a8] bg-opacity-70"
+            class="text-white hover:bg-[#2599a8] hover:bg-opacity-70 block px-3 py-2 rounded-lg text-base font-medium transition-colors duration-200"
+            (click)="closeMobileMenu()">
+            Signup
+          </a>
+        </ng-template>
       </div>
     </div>
   </div>

@@ -1,6 +1,7 @@
 const User = require("../model/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+
 const {promisify} = require('util');
 const {DeleteFile,Defimgpath} = require("../utilis/DelPrevFile");
 
@@ -8,9 +9,10 @@ exports.signup = async (req, res) => {
   try {
     const newUser = req.body;
     const user = await User.create(newUser);
-    
+
     user.img = Defimgpath;
     if (req.file) {
+
       user.img = `uploads/images/persons/${req.file.filename}`;
     } 
 
@@ -42,7 +44,7 @@ exports.login = async (req, res) => {
     }
 
     const user = await User.findOne({ email: email });
-    if (!user ) {
+    if (!user) {
       return res.status(401).json({
         status: "fail",
         message: "user is not found",
@@ -53,17 +55,17 @@ exports.login = async (req, res) => {
     if (!isValid) {
       return res.status(401).json({ message: 'Invalid Email or Password!' })
     }
-    
-    const accessToken = jwt.sign({ id: user._id,admin: user.admin },process.env.JWT_SECRET, { expiresIn: '4h' });
-    const refreshToken = jwt.sign({ id: user._id},process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
-    
+
+    const accessToken = jwt.sign({ id: user._id, admin: user.admin }, process.env.JWT_SECRET, { expiresIn: '4h' });
+    const refreshToken = jwt.sign({ id: user._id }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
+
     user.refreshToken = refreshToken;
     await user.save();
-    
+
     res.status(200).json({
       status: "success",
       message: "Login successful",
-      accessToken,refreshToken
+      accessToken, refreshToken, id: user.id
     });
   } catch (error) {
     res.status(500).json({
@@ -73,26 +75,26 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.refreshToken = async (req,res) => {
-  let {refreshtoken} = req.body;
-    if (!refreshtoken){
-      return res.status(403).json({message:'There is no refreshToken'});
-    }
-  try{
-    
-    let decoded = await promisify (jwt.verify) (refreshtoken,process.env.JWT_REFRESH_SECRET);
-    let user = await User.findOne({_id:decoded.id}); 
-    
-    if (!user || user.refreshToken != refreshtoken)
-    {
-      return res.status(403).json({message:'There is no refreshToken'});
-    }
-    let accessToken = jwt.sign({ id: user._id, username: user.username, admin: user.admin },process.env.JWT_SECRET, { expiresIn: '4h' });
-    return res.status(200).json({message:'success',accessToken});
+exports.refreshToken = async (req, res) => {
+  let { refreshtoken } = req.body;
+  if (!refreshtoken) {
+    return res.status(403).json({ message: 'There is no refreshToken' });
   }
-  catch (error){
-    res.status(403).json({message:'fail'});
-}};
+  try {
+
+    let decoded = await promisify(jwt.verify)(refreshtoken, process.env.JWT_REFRESH_SECRET);
+    let user = await User.findOne({ _id: decoded.id });
+
+    if (!user || user.refreshToken != refreshtoken) {
+      return res.status(403).json({ message: 'There is no refreshToken' });
+    }
+    let accessToken = jwt.sign({ id: user._id, username: user.username, admin: user.admin }, process.env.JWT_SECRET, { expiresIn: '4h' });
+    return res.status(200).json({ message: 'success', accessToken });
+  }
+  catch (error) {
+    res.status(403).json({ message: 'fail' });
+  }
+};
 
 exports.getAllUsers = async (req, res) => {
   try {
@@ -146,15 +148,15 @@ exports.getUserByID = async (req, res) => {
 exports.updateUser = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
-    Object.assign(user,req.body);
+    Object.assign(user, req.body);
 
     if (req.file) {
-      if (user.img) 
+      if (user.img)
         DeleteFile(user.img);
       user.img = `uploads/images/persons/${req.file.filename}`;
     }
     else if (req.body.user_img) {
-      if (user.img) 
+      if (user.img)
         DeleteFile(user.img);
       user.img = Defimgpath;
     }
@@ -184,7 +186,7 @@ exports.deleteUser = async (req, res) => {
         message: "only Admins Can Delete Users",
       });
     }
-    const id  = req.params.id;
+    const id = req.params.id;
     if (!id) {
       return res.status(400).json({
         status: "fail",

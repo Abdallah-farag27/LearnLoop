@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { AuthService, User } from '@shared/services/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -9,10 +10,11 @@ import { RouterModule, Router } from '@angular/router';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit {
   isMobileMenuOpen = false;
+  user: User | null = null;
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, public authService: AuthService) { }
 
   toggleMobileMenu() {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
@@ -21,9 +23,19 @@ export class NavbarComponent {
   closeMobileMenu() {
     this.isMobileMenuOpen = false;
   }
-
+  ngOnInit() {
+    // subscribe to user changes
+    this.authService.currentUser$.subscribe(user => {
+      this.user = user;
+      console.log('Navbar detected user change:', user);
+    });
+  }
   navigateToRegister() {
     this.closeMobileMenu();
     this.router.navigate(['/register']);
+  }
+  logout() {
+    this.authService.logout();
+    this.closeMobileMenu();
   }
 }
