@@ -133,7 +133,7 @@
 }
 
 .cta-button:hover {
-  background-color: #3434b5; 
+  background-color: #3434b5;
   transform: scale(1.1) rotate(2deg);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
@@ -176,6 +176,7 @@
   color: #e6f3f5;
   text-decoration: none;
   transition: color 0.3s ease;
+  cursor: pointer;
 }
 
 .footer-section ul li a:hover {

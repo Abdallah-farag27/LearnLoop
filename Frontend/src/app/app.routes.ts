@@ -7,6 +7,12 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { AdminProjectsComponent } from './components/projects/admin-projects/admin-projects.component';
 import { ProjectFormComponent } from './components/projects/project-form/project-form.component';
 import { ProjectDetailComponent } from './components/projects/project-detail/project-detail.component';
+import { AboutComponent } from './components/about/about.component';
+import { ContactComponent } from './components/contact/contact.component'
+import { FaqComponent } from './components/faq/faq.component';
+
+
+
 
 export const routes: Routes = [
   { path: "", redirectTo: "/home", pathMatch: "full" },
@@ -18,5 +24,8 @@ export const routes: Routes = [
   { path: 'projects/:id', component: ProjectDetailComponent, title: "Project Details" },
   { path: "profile", component: ProfileComponent, title: "Profile" },
   { path: "projects/:projectId/tasks", component: TasksComponent },
+  { path: 'contact', component: ContactComponent },
+  { path: 'about', component: AboutComponent },
+  { path: 'faq', component: FaqComponent },
   { path: "**", redirectTo: "/home" } // Wildcard route for 404 page
 ];
