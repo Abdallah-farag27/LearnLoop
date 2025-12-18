@@ -1,0 +1,21 @@
+<div class="contact-container">
+        <h1>Contact Us</h1>
+        <p>Have questions or feedback? Reach out to us using the form below or via email.</p>
+        <form>
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" placeholder="Your Name" required />
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="Your Email" required />
+          </div>
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" placeholder="Your Message" rows="5" required></textarea>
+          </div>
+          <button type="submit" class="submit-button">Send Message</button>
+        </form>
+        <p>Email: <a href="mailto:support@learnloop.com">support@learnloop.com</a></p>
+        <button (click)="goToHome()" class="back-button">Back to Home</button>
+      </div>

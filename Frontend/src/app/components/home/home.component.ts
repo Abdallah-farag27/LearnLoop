@@ -20,6 +20,15 @@ export class HomeComponent implements OnInit {
     });
   }
   goRegister() {
-    this.router.navigateByUrl('/register')
+    this.router.navigateByUrl('/register');
+  }
+  goToAbout() {
+    this.router.navigateByUrl('/about');
+  }
+  goToContact() {
+    this.router.navigateByUrl('/contact');
+  }
+  goToFaq() {
+    this.router.navigateByUrl('/faq');
   }
 }
