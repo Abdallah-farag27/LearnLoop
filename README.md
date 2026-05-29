@@ -1,4 +1,8 @@
-# `<p align="center"><img src="Frontend/logo.png" alt="LearnLoop Logo" width="120" style="border-radius: 50%"/>``<br>`LearnLoop`</p>`
+<p align="center">
+  <img src="Frontend/logo.png" alt="LearnLoop Logo" width="120" style="border-radius: 50%"/>
+</p>
+<h1 align="center">LearnLoop</h1>
+
 
 <p align="center">
   <strong>A premium, full-stack Project & Task Collaboration Platform</strong><br>
